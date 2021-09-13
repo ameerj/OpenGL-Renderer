@@ -58,14 +58,14 @@ int main() {
     constexpr u32 height{720};
     auto* window{Renderer::InitWindow(width, height)};
 
-    const GLuint quad_program{Shaders::GetRasterShader()};
+    const Program quad_program{Shaders::GetRasterShader()};
     const auto vertex_array_object{Shaders::BindQuadBuffers()};
 
     while (!glfwWindowShouldClose(window)) {
         ProcessInput(window);
 
         glClear(GL_COLOR_BUFFER_BIT);
-        glUseProgram(quad_program);
+        glUseProgram(quad_program.handle);
         glUniform3f(2, color_red, color_green, color_blue);
         glBindVertexArray(vertex_array_object);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);

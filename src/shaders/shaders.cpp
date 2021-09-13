@@ -6,41 +6,37 @@
 #include <string>
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
+
 #include "../common/common_types.h"
 #include "quad_program.h"
 #include "shaders.h"
 
 namespace Shaders {
-GLuint GetRasterShader() {
-    const char* vShaderCode = quad_vert.data();
-    const char* fShaderCode = quad_frag.data();
-    GLint vertex, fragment;
-    vertex = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex, 1, &vShaderCode, NULL);
-    glCompileShader(vertex);
+namespace {
+Shader CompileShader(GLenum stage, const char* shader_src) {
+    Shader shader;
+    shader.handle = glCreateShader(stage);
+    glShaderSource(shader.handle, 1, &shader_src, NULL);
+    glCompileShader(shader.handle);
 
-    GLint isCompiled = 0;
-    glGetShaderiv(vertex, GL_COMPILE_STATUS, &isCompiled);
-    if (isCompiled == GL_FALSE) {
-        fprintf(stderr, "vertex compile fail\n");
-    }
-    fragment = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment, 1, &fShaderCode, NULL);
-    glCompileShader(fragment);
-    glGetShaderiv(fragment, GL_COMPILE_STATUS, &isCompiled);
-    if (isCompiled == GL_FALSE) {
-        fprintf(stderr, "fragment compile fail\n");
-    }
-    const GLuint program = glCreateProgram();
-    glAttachShader(program, vertex);
-    glAttachShader(program, fragment);
-    glLinkProgram(program);
-    glGetProgramiv(program, GL_LINK_STATUS, &isCompiled);
-    if (isCompiled == GL_FALSE) {
-        fprintf(stderr, "program link fail\n");
-    }
-    glDeleteShader(vertex);
-    glDeleteShader(fragment);
+    return shader;
+}
+} // namespace
+
+Program GetRasterShader() {
+    const char* vertex_shader_code = quad_vert.data();
+    const char* fragment_shader_code = quad_frag.data();
+
+    const Shader vertex = CompileShader(GL_VERTEX_SHADER, vertex_shader_code);
+    const Shader fragment = CompileShader(GL_FRAGMENT_SHADER, fragment_shader_code);
+
+    Program program;
+    program.handle = glCreateProgram();
+
+    glAttachShader(program.handle, vertex.handle);
+    glAttachShader(program.handle, fragment.handle);
+    glLinkProgram(program.handle);
+
     return program;
 }
 

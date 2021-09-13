@@ -159,6 +159,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="model\mesh_model.cpp" />
     <ClCompile Include="renderer\renderer.cpp" />
+    <ClCompile Include="resources\resources.cpp" />
     <ClCompile Include="shaders\shaders.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -168,6 +169,7 @@
     <ClInclude Include="common\common_types.h" />
     <ClInclude Include="model\mesh_model.h" />
     <ClInclude Include="renderer\renderer.h" />
+    <ClInclude Include="resources\resources.h" />
     <ClInclude Include="shaders\quad_program.h" />
     <ClInclude Include="shaders\shaders.h" />
   </ItemGroup>

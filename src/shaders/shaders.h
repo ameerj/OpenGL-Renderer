@@ -2,9 +2,11 @@
 
 #include <glad/glad.h>
 
+#include "../resources/resources.h"
+
 namespace Shaders {
 
-GLuint GetRasterShader();
+Program GetRasterShader();
 GLuint BindQuadBuffers();
 
 } // namespace Shaders
