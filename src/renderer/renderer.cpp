@@ -6,6 +6,47 @@
 #include "renderer.h"
 
 namespace Renderer {
+namespace {
+const char* GetSource(GLenum source) {
+    switch (source) {
+    case GL_DEBUG_SOURCE_API:
+        return "API";
+    case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+        return "WINDOW_SYSTEM";
+    case GL_DEBUG_SOURCE_SHADER_COMPILER:
+        return "SHADER_COMPILER";
+    case GL_DEBUG_SOURCE_THIRD_PARTY:
+        return "THIRD_PARTY";
+    case GL_DEBUG_SOURCE_APPLICATION:
+        return "APPLICATION";
+    case GL_DEBUG_SOURCE_OTHER:
+        return "OTHER";
+    default:
+        return "Unknown source";
+    }
+}
+
+const char* GetType(GLenum type) {
+    switch (type) {
+    case GL_DEBUG_TYPE_ERROR:
+        return "ERROR";
+    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+        return "DEPRECATED_BEHAVIOR";
+    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+        return "UNDEFINED_BEHAVIOR";
+    case GL_DEBUG_TYPE_PORTABILITY:
+        return "PORTABILITY";
+    case GL_DEBUG_TYPE_PERFORMANCE:
+        return "PERFORMANCE";
+    case GL_DEBUG_TYPE_OTHER:
+        return "OTHER";
+    case GL_DEBUG_TYPE_MARKER:
+        return "MARKER";
+    default:
+        return "Unknown type";
+    }
+}
+} // namespace
 
 void FbSizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -13,7 +54,14 @@ void FbSizeCallback(GLFWwindow* window, int width, int height) {
 
 void DebugMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
                   const GLchar* message, const void* userParam) {
-    fprintf(stderr, "%s\n", message);
+    switch (severity) {
+    case GL_DEBUG_SEVERITY_HIGH:
+        fprintf(stderr, "%s %s 0x%x: %s\n", GetSource(source), GetType(type), id, message);
+        break;
+    default:
+        // TODO: print other severities if oddities encountered.
+        break;
+    }
 }
 
 GLFWwindow* InitWindow(u32 width, u32 height) {

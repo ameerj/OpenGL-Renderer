@@ -40,22 +40,16 @@ Program GetRasterShader() {
     return program;
 }
 
-GLuint BindQuadBuffers() {
+Buffer GetVertexBuffer() {
     constexpr std::array vertices{
-        1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f,
+        0.75f, -0.75f, -0.75f, -0.75f, 0.0f, 0.75f,
     };
 
-    u32 vertex_buffer_object, vertex_array_object;
-    glGenVertexArrays(1, &vertex_array_object);
-    glGenBuffers(1, &vertex_buffer_object);
-    glBindVertexArray(vertex_array_object);
+    Buffer vertex_buffer_object;
+    vertex_buffer_object.Create();
+    glNamedBufferData(vertex_buffer_object.handle, sizeof(vertices), vertices.data(),
+                      GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(), GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
-    glEnableVertexAttribArray(0);
-    return vertex_array_object;
+    return vertex_buffer_object;
 }
 } // namespace Shaders

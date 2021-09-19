@@ -7,6 +7,7 @@
 namespace Shaders {
 
 Program GetRasterShader();
-GLuint BindQuadBuffers();
+
+Buffer GetVertexBuffer();
 
 } // namespace Shaders

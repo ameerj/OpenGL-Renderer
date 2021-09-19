@@ -1,11 +1,11 @@
 #define GLFW_INCLUDE_NONE
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
 #include "common/common_types.h"
-#include "model/mesh_model.h"
 #include "renderer/renderer.h"
 #include "shaders/shaders.h"
 
@@ -59,17 +59,27 @@ int main() {
     auto* window{Renderer::InitWindow(width, height)};
 
     const Program quad_program{Shaders::GetRasterShader()};
-    const auto vertex_array_object{Shaders::BindQuadBuffers()};
+    glUseProgram(quad_program.handle);
+
+    const auto vertex_buffer{Shaders::GetVertexBuffer()};
+    VAO vao;
+    vao.Create();
+    glBindVertexArray(vao.handle);
+
+    glVertexArrayVertexBuffer(vao.handle, 0, vertex_buffer.handle, 0, 2 * sizeof(float));
+
+    constexpr GLuint PositionLocation = 0;
+    glEnableVertexAttribArray(PositionLocation);
+    glVertexAttribFormat(PositionLocation, 2, GL_FLOAT, GL_FALSE, 0);
+    glVertexAttribBinding(PositionLocation, 0);
 
     while (!glfwWindowShouldClose(window)) {
         ProcessInput(window);
 
         glClear(GL_COLOR_BUFFER_BIT);
-        glUseProgram(quad_program.handle);
         glUniform3f(2, color_red, color_green, color_blue);
-        glBindVertexArray(vertex_array_object);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-        printf("color: %.3f  %.3f   %.3f  \r", color_red, color_green, color_blue);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        printf("Color: %.3f  %.3f   %.3f  \r", color_red, color_green, color_blue);
 
         glfwPollEvents();
         glfwSwapBuffers(window);

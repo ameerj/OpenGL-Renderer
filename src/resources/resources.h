@@ -41,3 +41,18 @@ public:
 
     GLuint handle = 0;
 };
+
+class VAO {
+public:
+    VAO() = default;
+
+    ~VAO() {
+        Release();
+    }
+
+    void Create();
+
+    void Release();
+
+    GLuint handle = 0;
+};

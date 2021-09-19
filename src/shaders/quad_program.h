@@ -3,7 +3,7 @@
 #include <string_view>
 
 constexpr std::string_view quad_vert = R"(#version 430
-layout(location = 0) in vec2 coord;
+layout (location = 0) in vec2 coord;
 layout (location = 0) out vec2 frag_tex_coord;
 
 void main() {

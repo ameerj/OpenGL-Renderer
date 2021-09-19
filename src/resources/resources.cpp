@@ -26,3 +26,16 @@ void Buffer::Release() {
     glDeleteBuffers(1, &handle);
     handle = 0;
 }
+
+void VAO::Create() {
+    if (handle != 0)
+        return;
+    glGenVertexArrays(1, &handle);
+}
+
+void VAO::Release() {
+    if (handle == 0)
+        return;
+    glDeleteVertexArrays(1, &handle);
+    handle = 0;
+}
