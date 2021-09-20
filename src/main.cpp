@@ -5,6 +5,8 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
+#include <windows.h>
+
 #include "common/common_types.h"
 #include "renderer/renderer.h"
 #include "shaders/shaders.h"
@@ -20,10 +22,34 @@ void ResetValues() {
     color_blue = 0.0f;
 }
 
+void OpenFile() {
+    // From: https://iq.direct/blog/57-displaying-open-file-dialog-using-winapi.html
+    OPENFILENAMEA ofn{0};
+    char buffer[300];
+    std::fill(buffer, buffer + 300, '\0');
+    ofn.lStructSize = sizeof(OPENFILENAMEA);
+    ofn.lpstrFile = buffer;
+    ofn.nMaxFile = 300;
+    ofn.Flags = OFN_EXPLORER;
+    ofn.lpstrFilter = NULL;
+    ofn.lpstrCustomFilter = NULL;
+    ofn.nFilterIndex = 0;
+    ofn.lpstrFileTitle = NULL;
+    ofn.lpstrInitialDir = NULL;
+    ofn.lpstrTitle = NULL;
+    std::cout << GetOpenFileNameA(&ofn) << std::endl;
+    std::cout << buffer << (int)CommDlgExtendedError();
+}
+
 void ProcessInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
+    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
+        // TODO: use this to dynamically load new models.
+        OpenFile();
+    }
+
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
         color_red += 0.005f;
     }
@@ -79,7 +105,7 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
         glUniform3f(2, color_red, color_green, color_blue);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        printf("Color: %.3f  %.3f   %.3f  \r", color_red, color_green, color_blue);
+        // printf("Color: %.3f  %.3f   %.3f  \r", color_red, color_green, color_blue);
 
         glfwPollEvents();
         glfwSwapBuffers(window);
