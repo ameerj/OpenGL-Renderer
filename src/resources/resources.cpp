@@ -1,5 +1,13 @@
 #include "resources.h"
 
+#define DEFAULT_MOVE_CONSTRUCTOR                                                                   \
+    handle = rhs.handle;                                                                           \
+    rhs.handle = 0;
+
+Shader::Shader(Shader&& rhs) {
+    DEFAULT_MOVE_CONSTRUCTOR;
+}
+
 void Shader::Release() {
     if (handle == 0)
         return;
@@ -7,11 +15,19 @@ void Shader::Release() {
     handle = 0;
 }
 
+Program::Program(Program&& rhs) {
+    DEFAULT_MOVE_CONSTRUCTOR;
+}
+
 void Program::Release() {
     if (handle == 0)
         return;
     glDeleteProgram(handle);
     handle = 0;
+}
+
+Buffer::Buffer(Buffer&& rhs) {
+    DEFAULT_MOVE_CONSTRUCTOR;
 }
 
 void Buffer::Create() {
@@ -25,6 +41,10 @@ void Buffer::Release() {
         return;
     glDeleteBuffers(1, &handle);
     handle = 0;
+}
+
+VAO::VAO(VAO&& rhs) {
+    DEFAULT_MOVE_CONSTRUCTOR;
 }
 
 void VAO::Create() {

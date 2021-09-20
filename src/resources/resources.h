@@ -1,9 +1,11 @@
 #pragma once
+#include <iostream>
 #include <glad/glad.h>
 
 class Shader {
 public:
     Shader() = default;
+    Shader(Shader&& rhs);
 
     ~Shader() {
         Release();
@@ -17,6 +19,7 @@ public:
 class Program {
 public:
     Program() = default;
+    Program(Program&& rhs);
 
     ~Program() {
         Release();
@@ -30,6 +33,7 @@ public:
 class Buffer {
 public:
     Buffer() = default;
+    Buffer(Buffer&& rhs);
 
     ~Buffer() {
         Release();
@@ -45,6 +49,7 @@ public:
 class VAO {
 public:
     VAO() = default;
+    VAO(VAO&& rhs);
 
     ~VAO() {
         Release();
