@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)externals\assimp\include;$(SolutionDir)externals\glfw\include;$(SolutionDir)externals\glad\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir)externals\glm\;$(SolutionDir)externals\assimp\include;$(SolutionDir)externals\glfw\include;$(SolutionDir)externals\glad\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(SolutionDir)externals\assimp\lib;$(SolutionDir)externals\glfw\lib;$(LibraryPath)</LibraryPath>
     <SourcePath>$(SolutionDir)src\;$(SolutionDir)externals\glad\src;$(SourcePath)</SourcePath>
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
@@ -86,7 +86,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)externals\assimp\include;$(SolutionDir)externals\glfw\include;$(SolutionDir)externals\glad\include;$(SolutionDir)externals\assimp\include;$(SolutionDir)externals\glfw\include;$(SolutionDir)externals\glad\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)externals\glm\;$(SolutionDir)externals\assimp\include;$(SolutionDir)externals\glfw\include;$(SolutionDir)externals\glad\include;$(SolutionDir)externals\assimp\include;$(SolutionDir)externals\glfw\include;$(SolutionDir)externals\glad\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)externals\assimp\lib;$(SolutionDir)externals\glfw\lib;$(LibraryPath)</LibraryPath>
     <SourcePath>$(SolutionDir)src\;$(SolutionDir)externals\glad\src;$(SourcePath)</SourcePath>
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
@@ -157,6 +157,7 @@
   <ItemGroup>
     <ClCompile Include="..\externals\glad\src\glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="model\model.cpp" />
     <ClCompile Include="renderer\renderer.cpp" />
     <ClCompile Include="resources\resources.cpp" />
     <ClCompile Include="shaders\shaders.cpp" />
@@ -166,6 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\common_types.h" />
+    <ClInclude Include="model\model.h" />
     <ClInclude Include="renderer\renderer.h" />
     <ClInclude Include="resources\resources.h" />
     <ClInclude Include="shaders\quad_program.h" />

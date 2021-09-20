@@ -37,6 +37,22 @@ Program GetRasterShader() {
     glAttachShader(program.handle, fragment.handle);
     glLinkProgram(program.handle);
 
+    GLint link_status{};
+    glGetProgramiv(program.handle, GL_LINK_STATUS, &link_status);
+
+    GLint log_length{};
+    glGetProgramiv(program.handle, GL_INFO_LOG_LENGTH, &log_length);
+    if (log_length == 0) {
+        return program;
+    }
+    std::string log(log_length, 0);
+    glGetProgramInfoLog(program.handle, log_length, nullptr, log.data());
+    if (link_status == GL_FALSE) {
+        fprintf(stderr, "LINK ERROR: %s\n", log.c_str());
+    } else {
+        fprintf(stderr, "LINK LOG: %s\n", log.c_str());
+    }
+
     return program;
 }
 

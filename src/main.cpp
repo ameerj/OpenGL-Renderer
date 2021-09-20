@@ -4,10 +4,13 @@
 #include <string>
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <windows.h>
 
 #include "common/common_types.h"
+#include "model/model.h"
 #include "renderer/renderer.h"
 #include "shaders/shaders.h"
 
@@ -87,28 +90,40 @@ int main() {
     const Program quad_program{Shaders::GetRasterShader()};
     glUseProgram(quad_program.handle);
 
-    const auto vertex_buffer{Shaders::GetVertexBuffer()};
-    VAO vao;
-    vao.Create();
-    glBindVertexArray(vao.handle);
+    Model::Model cube("test.obj");
 
-    glVertexArrayVertexBuffer(vao.handle, 0, vertex_buffer.handle, 0, 2 * sizeof(float));
+    const glm::mat4 proj = glm::ortho(-1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f);
+    const glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
+    const glm::vec3 translation = glm::vec3(0, 0, 0);
 
-    constexpr GLuint PositionLocation = 0;
-    glEnableVertexAttribArray(PositionLocation);
-    glVertexAttribFormat(PositionLocation, 2, GL_FLOAT, GL_FALSE, 0);
-    glVertexAttribBinding(PositionLocation, 0);
+    const int radius = 1, cam_height = 0;
 
+    // glEnable(GL_DEPTH_TEST);
+
+    float theta = 0.0;
     while (!glfwWindowShouldClose(window)) {
         ProcessInput(window);
 
         glClear(GL_COLOR_BUFFER_BIT);
-        glUniform3f(2, color_red, color_green, color_blue);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        const auto eye = glm::vec3(radius * std::cos(theta), cam_height, radius * std::sin(theta));
+        // var eye = vec3(1.0, 1.0, 1.0);
+        const auto at = glm::vec3(0.0, 0.0, 0.0);
+        const auto up = glm::vec3(0.0, 1.0, 0.0);
+        const auto modelViewMatrix = glm::lookAt(eye, at, up);
+        const auto projectionMatrix = glm::perspective(60.0f, (f32)width / height, 0.01f, 10.0f);
+
+        const auto mvp = projectionMatrix * modelViewMatrix;
+
+        glUniformMatrix4fv(0, 1, GL_FALSE, &mvp[0][0]);
+        // SetUniformMat4f("u_MVP", mvp);
+
+        glDrawElements(GL_TRIANGLES, cube.NumIndices(), GL_UNSIGNED_INT, 0);
         // printf("Color: %.3f  %.3f   %.3f  \r", color_red, color_green, color_blue);
 
         glfwPollEvents();
         glfwSwapBuffers(window);
+        theta += 0.01f;
     }
     glfwTerminate();
     return 0;
