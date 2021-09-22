@@ -18,11 +18,8 @@ void main() {
 constexpr std::string_view quad_frag = R"(#version 430
 layout (location = 0) in vec3 frag_color;
 layout (location = 0) out vec4 color;
-// layout (binding = 0) uniform sampler2D color_texture;
-layout (location = 2) uniform vec3 color_uniform;
 
 void main() {
-    // color = vec4(texture(color_texture, frag_tex_coord).rgb, 1.0f);
     color = vec4(frag_color, 1.0);
 }
 )";
