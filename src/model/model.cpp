@@ -48,6 +48,8 @@ Model::Model(const std::string& path) {
     // process ASSIMP's root node recursively
     ProcessAINode(scene->mRootNode, scene);
     LoadMaterials(scene);
+    sampler.Create();
+    sampler.DefaultConfiguration();
 }
 
 void Model::ProcessAINode(aiNode* node, const aiScene* scene) {
@@ -77,16 +79,14 @@ void Model::LoadMaterials(const aiScene* scene) {
         const auto texture_path = std::string("../res/textures/") + filename;
 
         textures[i].Create();
-        samplers[i].Create();
         textures[i].UploadDataFromPath(texture_path);
-        samplers[i].DefaultConfiguration();
     }
 }
 
 void Model::Render() {
+    glBindSampler(0, sampler.handle);
     for (size_t i = 0; i < meshes.size(); ++i) {
-        glBindTexture(GL_TEXTURE_2D, textures.at(i).handle);
-        glBindSampler(0, samplers.at(i).handle);
+        glBindTexture(GL_TEXTURE_2D, textures.at(i + 1).handle);
         meshes[i].Render();
     }
 }

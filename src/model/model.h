@@ -22,6 +22,7 @@ private:
     std::vector<Mesh::Mesh> meshes;
     std::vector<Texture> textures;
     std::vector<Sampler> samplers;
+    Sampler sampler;
 };
 
 } // namespace Model
