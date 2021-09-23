@@ -21,9 +21,14 @@ void Mesh::Render() const {
     glVertexArrayVertexBuffer(vertex_array_object.handle, 0, vertex_buffer.handle, 0,
                               sizeof(vertices[0]));
     constexpr GLuint PositionLocation = 0;
+    constexpr GLuint TextureCoordsLocation = 1;
     glEnableVertexAttribArray(PositionLocation);
-    glVertexAttribFormat(PositionLocation, 3, GL_FLOAT, GL_FALSE, 0);
+    glVertexAttribFormat(PositionLocation, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
     glVertexAttribBinding(PositionLocation, 0);
+    glEnableVertexAttribArray(TextureCoordsLocation);
+    glVertexAttribFormat(TextureCoordsLocation, 2, GL_FLOAT, GL_FALSE,
+                         offsetof(Vertex, texture_coords));
+    glVertexAttribBinding(TextureCoordsLocation, 0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer.handle);
 

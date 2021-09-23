@@ -5,7 +5,7 @@
 class Shader {
 public:
     Shader() = default;
-    Shader(Shader&& rhs);
+    Shader(Shader&& rhs) : handle{std::exchange(rhs.handle, 0)} {}
 
     ~Shader() {
         Release();
@@ -19,7 +19,7 @@ public:
 class Program {
 public:
     Program() = default;
-    Program(Program&& rhs);
+    Program(Program&& rhs) : handle{std::exchange(rhs.handle, 0)} {}
 
     ~Program() {
         Release();
@@ -33,7 +33,7 @@ public:
 class Buffer {
 public:
     Buffer() = default;
-    Buffer(Buffer&& rhs);
+    Buffer(Buffer&& rhs) : handle{std::exchange(rhs.handle, 0)} {}
 
     ~Buffer() {
         Release();
@@ -49,7 +49,7 @@ public:
 class VAO {
 public:
     VAO() = default;
-    VAO(VAO&& rhs);
+    VAO(VAO&& rhs) : handle{std::exchange(rhs.handle, 0)} {}
 
     ~VAO() {
         Release();
@@ -58,6 +58,42 @@ public:
     void Create();
 
     void Release();
+
+    GLuint handle = 0;
+};
+
+class Sampler {
+public:
+    Sampler() = default;
+    Sampler(Sampler&& rhs) : handle{std::exchange(rhs.handle, 0)} {}
+
+    ~Sampler() {
+        Release();
+    }
+
+    void Create();
+
+    void Release();
+
+    void DefaultConfiguration();
+
+    GLuint handle = 0;
+};
+
+class Texture {
+public:
+    Texture() = default;
+    Texture(Texture&& rhs) : handle{std::exchange(rhs.handle, 0)} {}
+
+    ~Texture() {
+        Release();
+    }
+
+    void Create();
+
+    void Release();
+
+    void UploadDataFromPath(const std::string& path);
 
     GLuint handle = 0;
 };

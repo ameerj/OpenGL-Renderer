@@ -10,6 +10,7 @@
 
 struct Vertex {
     glm::vec3 position;
+    glm::vec2 texture_coords;
 };
 
 namespace Mesh {

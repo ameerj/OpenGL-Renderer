@@ -12,12 +12,16 @@ public:
     Model() = default;
     Model(const std::string& path);
 
-    void ProcessAINode(aiNode* node, const aiScene* scene);
-
     void Render();
 
 private:
+    void ProcessAINode(aiNode* node, const aiScene* scene);
+
+    void LoadMaterials(const aiScene* scene);
+
     std::vector<Mesh::Mesh> meshes;
+    std::vector<Texture> textures;
+    std::vector<Sampler> samplers;
 };
 
 } // namespace Model
