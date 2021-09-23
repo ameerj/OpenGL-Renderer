@@ -1,34 +1,23 @@
 #pragma once
-#include <string_view>
-#include <vector>
+#include <string>
 
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
+#include "mesh.h"
 
-#include "../common/common_types.h"
-#include "../resources/resources.h"
+struct aiNode;
+struct aiScene;
 
 namespace Model {
-struct Vertex {
-    glm::vec3 position;
-};
-
 class Model {
 public:
     Model() = default;
-    Model(std::string_view filename);
+    Model(const std::string& path);
 
-    size_t NumIndices() {
-        return indices.size();
-    }
+    void ProcessAINode(aiNode* node, const aiScene* scene);
 
-    std::vector<Vertex> vertices;
-    std::vector<u32> indices;
+    void Render();
 
 private:
-    VAO vertex_array_object;
-    Buffer vertex_buffer;
-    Buffer index_buffer;
+    std::vector<Mesh::Mesh> meshes;
 };
 
 } // namespace Model

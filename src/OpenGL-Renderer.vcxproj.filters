@@ -33,6 +33,9 @@
     <ClCompile Include="model\model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="model\mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="assimp-vc142-mt.dll" />
@@ -54,6 +57,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="model\model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="model\mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

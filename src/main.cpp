@@ -15,10 +15,10 @@
 #include "shaders/shaders.h"
 
 namespace {
-float radius = 1, cam_height = 0, theta = 0.0f;
+float radius = 5, cam_height = 0, theta = 0.0f;
 
 void ResetValues() {
-    radius = 1;
+    radius = 5;
     cam_height = 0;
     theta = 0.0f;
 }
@@ -59,17 +59,17 @@ void ProcessInput(GLFWwindow* window) {
     }
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        cam_height += 0.005f;
+        cam_height += 0.1f;
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        cam_height -= 0.005f;
+        cam_height -= 0.1f;
     }
 
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-        radius += 0.005f;
+        radius += 0.1f;
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        radius -= 0.005f;
+        radius -= 0.1f;
     }
     if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
         ResetValues();
@@ -86,11 +86,17 @@ int main() {
     const Program quad_program{Shaders::GetRasterShader()};
     glUseProgram(quad_program.handle);
 
-    Model::Model cube("test.obj");
+    Model::Model mesh_model("../res/models/sonic.obj");
+    const auto model_matrix =
+        glm::scale(glm::mat4(1.0f), glm::vec3(0.25f, 0.25f, 0.25f)) *
+        glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0, 1, 0));
 
-    const glm::mat4 proj = glm::ortho(-1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f);
+    const glm::mat4 proj = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
     const glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
     const glm::vec3 translation = glm::vec3(0, 0, 0);
+
+    const auto projection_matrix =
+        glm::perspective(glm::radians(45.0f), (f32)width / height, 0.01f, 100.0f);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -102,18 +108,17 @@ int main() {
         const auto eye = glm::vec3(radius * std::cos(theta), cam_height, radius * std::sin(theta));
         const auto at = glm::vec3(0.0, 0.0, 0.0);
         const auto up = glm::vec3(0.0, 1.0, 0.0);
-        const auto modelViewMatrix = glm::lookAt(eye, at, up);
-        const auto projectionMatrix = glm::perspective(60.0f, (f32)width / height, 0.01f, 10.0f);
+        const auto view_matrix = glm::lookAt(eye, at, up);
+        const auto model_view_matrix = view_matrix * model_matrix;
 
-        const auto mvp = projectionMatrix * modelViewMatrix;
+        const auto mvp = projection_matrix * model_view_matrix;
 
         glUniformMatrix4fv(0, 1, GL_FALSE, &mvp[0][0]);
 
-        glDrawElements(GL_TRIANGLES, cube.NumIndices(), GL_UNSIGNED_INT, 0);
+        mesh_model.Render();
 
         glfwPollEvents();
         glfwSwapBuffers(window);
-        theta += 0.01f;
     }
     glfwTerminate();
     return 0;

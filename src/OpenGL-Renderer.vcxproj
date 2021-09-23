@@ -71,13 +71,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)externals\glm\;$(SolutionDir)externals\assimp\include;$(SolutionDir)externals\glfw\include;$(SolutionDir)externals\glad\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(SolutionDir)externals\assimp\lib;$(SolutionDir)externals\glfw\lib;$(LibraryPath)</LibraryPath>
     <SourcePath>$(SolutionDir)src\;$(SolutionDir)externals\glad\src;$(SourcePath)</SourcePath>
@@ -157,6 +157,7 @@
   <ItemGroup>
     <ClCompile Include="..\externals\glad\src\glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="model\mesh.cpp" />
     <ClCompile Include="model\model.cpp" />
     <ClCompile Include="renderer\renderer.cpp" />
     <ClCompile Include="resources\resources.cpp" />
@@ -167,6 +168,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\common_types.h" />
+    <ClInclude Include="model\mesh.h" />
     <ClInclude Include="model\model.h" />
     <ClInclude Include="renderer\renderer.h" />
     <ClInclude Include="resources\resources.h" />

@@ -1,33 +1,66 @@
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+
 #include "model.h"
 
 namespace Model {
-Model::Model(std::string_view filename) {
-    vertices = {
-        {{-0.5, -0.5, 0.5}},  {{-0.5, 0.5, 0.5}},  {{0.5, 0.5, 0.5}},  {{0.5, -0.5, 0.5}},
-        {{-0.5, -0.5, -0.5}}, {{-0.5, 0.5, -0.5}}, {{0.5, 0.5, -0.5}}, {{0.5, -0.5, -0.5}},
-    };
-    indices = {
-        0, 3, 2, 0, 2, 1, 2, 3, 7, 2, 7, 6, 0, 4, 7, 0, 7, 3,
-        1, 2, 6, 1, 6, 5, 4, 5, 6, 4, 6, 7, 0, 1, 5, 0, 5, 4,
-    };
+namespace {
+Mesh::Mesh ProcessMesh(const aiMesh* const mesh, const aiScene* const scene) {
+    std::vector<Vertex> vertices(mesh->mNumVertices);
+    std::vector<u32> indices;
 
-    vertex_buffer.Create();
-    glNamedBufferData(vertex_buffer.handle, vertices.size() * sizeof(vertices[0]), vertices.data(),
-                      GL_STATIC_DRAW);
+    for (u32 i = 0; i < mesh->mNumVertices; i++) {
+        const Vertex vertex{
+            .position =
+                {
+                    mesh->mVertices[i].x,
+                    mesh->mVertices[i].y,
+                    mesh->mVertices[i].z,
+                },
+        };
 
-    vertex_array_object.Create();
-    glBindVertexArray(vertex_array_object.handle);
+        vertices[i] = vertex;
+    }
+    for (u32 i = 0; i < mesh->mNumFaces; i++) {
+        aiFace face = mesh->mFaces[i];
+        for (u32 j = 0; j < face.mNumIndices; j++) {
+            indices.push_back(face.mIndices[j]);
+        }
+    }
+    return Mesh::Mesh(vertices, indices);
+}
+} // namespace
 
-    glVertexArrayVertexBuffer(vertex_array_object.handle, 0, vertex_buffer.handle, 0,
-                              sizeof(vertices[0]));
-    constexpr GLuint PositionLocation = 0;
-    glEnableVertexAttribArray(PositionLocation);
-    glVertexAttribFormat(PositionLocation, 3, GL_FLOAT, GL_FALSE, 0);
-    glVertexAttribBinding(PositionLocation, 0);
+Model::Model(const std::string& path) {
+    Assimp::Importer importer;
+    const aiScene* scene =
+        importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs |
+                                    aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices);
 
-    index_buffer.Create();
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer.handle);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(indices[0]), indices.data(),
-                 GL_STATIC_DRAW);
+    // check for errors
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+        fprintf(stderr, "ASSIMP error: %s\n ", importer.GetErrorString());
+        return;
+    }
+
+    // process ASSIMP's root node recursively
+    ProcessAINode(scene->mRootNode, scene);
+}
+
+void Model::ProcessAINode(aiNode* node, const aiScene* scene) {
+    for (unsigned int i = 0; i < node->mNumMeshes; i++) {
+        const aiMesh* const mesh = scene->mMeshes[node->mMeshes[i]];
+        meshes.push_back(ProcessMesh(mesh, scene));
+    }
+    for (unsigned int i = 0; i < node->mNumChildren; i++) {
+        ProcessAINode(node->mChildren[i], scene);
+    }
+}
+
+void Model::Render() {
+    for (const auto& mesh : meshes) {
+        mesh.Render();
+    }
 }
 } // namespace Model
