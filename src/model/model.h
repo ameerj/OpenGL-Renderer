@@ -10,7 +10,9 @@ namespace Model {
 class Model {
 public:
     Model() = default;
-    Model(const std::string& path);
+    ~Model() = default;
+
+    void ParseObjModel(const std::string& path);
 
     void Render();
 

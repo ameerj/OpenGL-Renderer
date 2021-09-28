@@ -21,6 +21,12 @@ public:
     Program() = default;
     Program(Program&& rhs) : handle{std::exchange(rhs.handle, 0)} {}
 
+    Program& operator=(Program&& o) noexcept {
+        Release();
+        handle = std::exchange(o.handle, 0);
+        return *this;
+    }
+
     ~Program() {
         Release();
     }

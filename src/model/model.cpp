@@ -36,7 +36,7 @@ Mesh::Mesh ProcessMesh(const aiMesh* const mesh, const aiScene* const scene) {
 }
 } // namespace
 
-Model::Model(const std::string& path) {
+void Model::ParseObjModel(const std::string& path) {
     Assimp::Importer importer;
     const aiScene* scene =
         importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs |
