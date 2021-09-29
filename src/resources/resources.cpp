@@ -64,7 +64,14 @@ void Texture::UploadDataFromPath(const std::string& path) {
         printf("Failed to find: %s\n", path.c_str());
         return;
     }
-    glTextureStorage2D(handle, 1, GL_RGBA8, width, height);
+    if (bit_depth == 3) {
+        glTextureStorage2D(handle, 1, GL_RGB8, width, height);
+    } else if (bit_depth == 4) {
+        glTextureStorage2D(handle, 1, GL_RGBA8, width, height);
+    } else {
+        printf("Unimplemented texture bit depth: %d\n", bit_depth);
+        glTextureStorage2D(handle, 1, GL_RGBA8, width, height);
+    }
     glTextureSubImage2D(handle, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
     glGenerateTextureMipmap(handle);
 

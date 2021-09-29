@@ -47,7 +47,7 @@
     <ClInclude Include="renderer\renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="shaders\quad_program.h">
+    <ClInclude Include="shaders\basic_rasterizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="shaders\shaders.h">
@@ -60,6 +60,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="model\mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders\phong_shading.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

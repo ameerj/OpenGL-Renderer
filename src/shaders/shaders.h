@@ -8,6 +8,6 @@ namespace Shaders {
 
 Program GetRasterShader();
 
-Buffer GetVertexBuffer();
+Program GetPhongShader();
 
 } // namespace Shaders

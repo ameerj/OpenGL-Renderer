@@ -10,16 +10,20 @@
 
 struct Vertex {
     glm::vec3 position;
+    glm::vec3 normal;
     glm::vec2 texture_coords;
 };
 
 namespace Mesh {
 class Mesh {
 public:
-    Mesh(const std::vector<Vertex>& vertices, const std::vector<u32>& indices);
+    Mesh(const std::vector<Vertex>& vertices, const std::vector<u32>& indices, u32 mat_idx);
 
     void Render() const;
 
+    u32 material_index;
+
+private:
     size_t NumIndices() const {
         return indices.size();
     }
@@ -27,7 +31,6 @@ public:
     std::vector<Vertex> vertices;
     std::vector<u32> indices;
 
-private:
     VAO vertex_array_object;
     Buffer vertex_buffer;
     Buffer index_buffer;

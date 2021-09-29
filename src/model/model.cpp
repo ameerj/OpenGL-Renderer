@@ -19,6 +19,12 @@ Mesh::Mesh ProcessMesh(const aiMesh* const mesh, const aiScene* const scene) {
                     mesh->mVertices[i].y,
                     mesh->mVertices[i].z,
                 },
+            .normal =
+                {
+                    mesh->mNormals[i].x,
+                    mesh->mNormals[i].y,
+                    mesh->mNormals[i].z,
+                },
             .texture_coords{},
         };
         if (mesh->mTextureCoords[0]) {
@@ -32,7 +38,7 @@ Mesh::Mesh ProcessMesh(const aiMesh* const mesh, const aiScene* const scene) {
             indices.push_back(face.mIndices[j]);
         }
     }
-    return Mesh::Mesh(vertices, indices);
+    return Mesh::Mesh(vertices, indices, mesh->mMaterialIndex);
 }
 } // namespace
 
@@ -45,6 +51,9 @@ void Model::ParseObjModel(const std::string& path) {
         fprintf(stderr, "ASSIMP error: %s\n ", importer.GetErrorString());
         return;
     }
+    meshes = std::vector<Mesh::Mesh>{};
+    textures = std::vector<Texture>{};
+
     // process ASSIMP's root node recursively
     ProcessAINode(scene->mRootNode, scene);
     LoadMaterials(scene);
@@ -64,7 +73,6 @@ void Model::ProcessAINode(aiNode* node, const aiScene* scene) {
 
 void Model::LoadMaterials(const aiScene* scene) {
     textures.resize(scene->mNumMaterials);
-    samplers.resize(scene->mNumMaterials);
     for (size_t i = 0; i < scene->mNumMaterials; i++) {
         const aiMaterial* const material = scene->mMaterials[i];
         if (material->GetTextureCount(aiTextureType_DIFFUSE) == 0) {
@@ -86,8 +94,10 @@ void Model::LoadMaterials(const aiScene* scene) {
 void Model::Render() {
     glBindSampler(0, sampler.handle);
     for (size_t i = 0; i < meshes.size(); ++i) {
-        glBindTexture(GL_TEXTURE_2D, textures.at(i + 1).handle);
-        meshes[i].Render();
+        const auto& mesh = meshes[i];
+        const auto texture_idx = mesh.material_index;
+        glBindTexture(GL_TEXTURE_2D, textures.at(texture_idx).handle);
+        mesh.Render();
     }
 }
 } // namespace Model

@@ -1,10 +1,18 @@
 #pragma once
 
+#include <glm/mat4x4.hpp>
+
 #include "../common/common_types.h"
 #include "../model/model.h"
 #include "../shaders/shaders.h"
 
 namespace Renderer {
+enum class Scene : u8 {
+    UNKNOWN,
+    Basic3D,
+    Phong3D,
+};
+
 class Renderer {
 public:
     Renderer(u32 width, u32 height);
@@ -12,11 +20,13 @@ public:
 
     void RenderLoop();
 
+    void SetScene(Scene scene);
+
     void SetMeshModel(const std::string& path);
 
 private:
     void InitWindow();
-    void ResetCameraParameters();
+    void ResetParameters();
     void ProcessInput();
 
     u32 window_width{};
@@ -28,8 +38,19 @@ private:
         float theta{};
     } camera_parameters{};
 
+    struct LightParameters {
+        glm::vec3 ambient{0.5f};
+        glm::vec3 diffuse{0.5f};
+        glm::vec3 specular{0.5f};
+    } light_parameters;
+
     GLFWwindow* window;
     Model::Model mesh_model;
     Program shader_program;
+
+    glm::mat4 model_matrix;
+    glm::mat4 projection_matrix;
+
+    Scene current_scene = Scene::UNKNOWN;
 };
 } // namespace Renderer

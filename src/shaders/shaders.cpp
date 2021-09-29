@@ -8,7 +8,8 @@
 #include <glad/glad.h>
 
 #include "../common/common_types.h"
-#include "quad_program.h"
+#include "basic_rasterizer.h"
+#include "phong_shading.h"
 #include "shaders.h"
 
 namespace Shaders {
@@ -21,11 +22,31 @@ Shader CompileShader(GLenum stage, const char* shader_src) {
 
     return shader;
 }
+
+void LinkProgram(GLuint handle) {
+    glLinkProgram(handle);
+
+    GLint link_status{};
+    glGetProgramiv(handle, GL_LINK_STATUS, &link_status);
+
+    GLint log_length{};
+    glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &log_length);
+    if (log_length == 0) {
+        return;
+    }
+    std::string log(log_length, 0);
+    glGetProgramInfoLog(handle, log_length, nullptr, log.data());
+    if (link_status == GL_FALSE) {
+        fprintf(stderr, "LINK ERROR: %s\n", log.c_str());
+    } else {
+        fprintf(stderr, "LINK LOG: %s\n", log.c_str());
+    }
+}
 } // namespace
 
 Program GetRasterShader() {
-    const char* vertex_shader_code = quad_vert.data();
-    const char* fragment_shader_code = quad_frag.data();
+    const char* vertex_shader_code = basic_vert.data();
+    const char* fragment_shader_code = basic_frag.data();
 
     const Shader vertex = CompileShader(GL_VERTEX_SHADER, vertex_shader_code);
     const Shader fragment = CompileShader(GL_FRAGMENT_SHADER, fragment_shader_code);
@@ -35,37 +56,25 @@ Program GetRasterShader() {
 
     glAttachShader(program.handle, vertex.handle);
     glAttachShader(program.handle, fragment.handle);
-    glLinkProgram(program.handle);
-
-    GLint link_status{};
-    glGetProgramiv(program.handle, GL_LINK_STATUS, &link_status);
-
-    GLint log_length{};
-    glGetProgramiv(program.handle, GL_INFO_LOG_LENGTH, &log_length);
-    if (log_length == 0) {
-        return program;
-    }
-    std::string log(log_length, 0);
-    glGetProgramInfoLog(program.handle, log_length, nullptr, log.data());
-    if (link_status == GL_FALSE) {
-        fprintf(stderr, "LINK ERROR: %s\n", log.c_str());
-    } else {
-        fprintf(stderr, "LINK LOG: %s\n", log.c_str());
-    }
+    LinkProgram(program.handle);
 
     return program;
 }
 
-Buffer GetVertexBuffer() {
-    constexpr std::array vertices{
-        0.75f, -0.75f, -0.75f, -0.75f, 0.0f, 0.75f,
-    };
+Program GetPhongShader() {
+    const char* vertex_shader_code = phong_vert.data();
+    const char* fragment_shader_code = phong_frag.data();
 
-    Buffer vertex_buffer_object;
-    vertex_buffer_object.Create();
-    glNamedBufferData(vertex_buffer_object.handle, sizeof(vertices), vertices.data(),
-                      GL_STATIC_DRAW);
+    const Shader vertex = CompileShader(GL_VERTEX_SHADER, vertex_shader_code);
+    const Shader fragment = CompileShader(GL_FRAGMENT_SHADER, fragment_shader_code);
 
-    return vertex_buffer_object;
+    Program program;
+    program.handle = glCreateProgram();
+
+    glAttachShader(program.handle, vertex.handle);
+    glAttachShader(program.handle, fragment.handle);
+    LinkProgram(program.handle);
+
+    return program;
 }
 } // namespace Shaders

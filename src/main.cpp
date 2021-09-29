@@ -17,7 +17,8 @@ int main() {
     constexpr u32 height{720};
 
     Renderer::Renderer renderer(width, height);
-    renderer.SetMeshModel("../res/models/sonic.obj");
+
+    renderer.SetScene(Renderer::Scene::Basic3D);
     renderer.RenderLoop();
 
     return 0;
