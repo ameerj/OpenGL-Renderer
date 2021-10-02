@@ -42,6 +42,7 @@ private:
         glm::vec3 ambient{0.5f};
         glm::vec3 diffuse{0.5f};
         glm::vec3 specular{0.5f};
+        float shininess{20.0f};
     } light_parameters;
 
     GLFWwindow* window;

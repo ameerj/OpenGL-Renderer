@@ -114,7 +114,7 @@ void Renderer::RenderLoop() {
 
             glUniform3f(3, 0.0f, 0.0f, 0.0f);
             glUniform3f(4, 0.25f, 0.25f, 0.25f);
-            glUniform1f(5, 20.0f);
+            glUniform1f(5, light_parameters.shininess);
 
             glUniform3fv(6, 1, &light_parameters.ambient[0]);
             glUniform3fv(7, 1, &light_parameters.diffuse[0]);
@@ -264,10 +264,17 @@ void Renderer::ProcessInput() {
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
         light_parameters.ambient -= 0.01f;
     }
+    if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS) {
+        light_parameters.shininess += 0.5f;
+    }
+    if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS) {
+        light_parameters.shininess -= 0.5f;
+    }
     const auto zero_vec3 = glm::vec3(0.0f);
     const auto one_vec3 = glm::vec3(1.0f);
     light_parameters.diffuse = glm::clamp(light_parameters.diffuse, zero_vec3, one_vec3);
     light_parameters.ambient = glm::clamp(light_parameters.ambient, zero_vec3, one_vec3);
     light_parameters.specular = glm::clamp(light_parameters.specular, zero_vec3, one_vec3);
+    light_parameters.shininess = glm::clamp(light_parameters.shininess, 1.0f, 1000.0f);
 }
 } // namespace Renderer
