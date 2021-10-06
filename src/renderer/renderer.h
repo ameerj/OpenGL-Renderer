@@ -11,6 +11,7 @@ enum class Scene : u8 {
     UNKNOWN,
     Basic3D,
     Phong3D,
+    TessBezier,
 };
 
 class Renderer {
@@ -23,6 +24,8 @@ public:
     void SetScene(Scene scene);
 
     void SetMeshModel(const std::string& path);
+
+    void SetBezierModel();
 
 private:
     void InitWindow();

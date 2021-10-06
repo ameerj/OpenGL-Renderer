@@ -61,6 +61,30 @@ void Model::ParseObjModel(const std::string& path) {
     sampler.DefaultConfiguration();
 }
 
+void Model::CreateBezierBuffers() {
+    meshes = std::vector<Mesh::Mesh>{};
+    textures = std::vector<Texture>{};
+    /*
+    std::vector<Vertex> vertices{
+        {{0.0, 0.0, 0.0}, {}, {}},  {{2.0, 0.0, 1.5}, {}, {}},  {{4.0, 0.0, 2.9}, {}, {}},
+        {{6.0, 0.0, 0.0}, {}, {}},  {{0.0, 2.0, 1.1}, {}, {}},  {{2.0, 2.0, 3.9}, {}, {}},
+        {{4.0, 2.0, 3.1}, {}, {}},  {{6.0, 2.0, 0.7}, {}, {}},  {{0.0, 4.0, -0.5}, {}, {}},
+        {{2.0, 4.0, 2.6}, {}, {}},  {{4.0, 4.0, 2.4}, {}, {}},  {{6.0, 4.0, 0.4}, {}, {}},
+        {{0.0, 6.0, 0.3}, {}, {}},  {{2.0, 6.0, -1.1}, {}, {}}, {{4.0, 6.0, 1.3}, {}, {}},
+        {{6.0, 6.0, -0.2}, {}, {}},
+    };
+    */
+    std::vector<Vertex> vertices{
+        {{0.0f, 2.0f, 0.0f}, {}, {}},  {{1.0f, 1.0f, 0.0f}, {}, {}}, {{2.0f, 1.0f, 0.0f}, {}, {}},
+        {{3.0f, 2.0f, 0.0f}, {}, {}},  {{0.0f, 1.0f, 1.0f}, {}, {}}, {{1.0f, -2.0f, 1.0f}, {}, {}},
+        {{2.0f, 1.0f, 1.0f}, {}, {}},  {{3.0f, 0.0f, 1.0f}, {}, {}}, {{0.0f, 0.0f, 2.0f}, {}, {}},
+        {{1.0f, 1.0f, 2.0f}, {}, {}},  {{2.0f, 0.0f, 2.0f}, {}, {}}, {{3.0f, -1.0f, 2.0f}, {}, {}},
+        {{0.0f, 0.0f, 3.0f}, {}, {}},  {{1.0f, 1.0f, 3.0f}, {}, {}}, {{2.0f, -1.0f, 3.0f}, {}, {}},
+        {{3.0f, -1.0f, 3.0f}, {}, {}},
+    };
+    meshes.push_back(Mesh::Mesh(vertices, {}, 0));
+}
+
 void Model::ProcessAINode(aiNode* node, const aiScene* scene) {
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
         const aiMesh* const mesh = scene->mMeshes[node->mMeshes[i]];
@@ -91,13 +115,15 @@ void Model::LoadMaterials(const aiScene* scene) {
     }
 }
 
-void Model::Render() {
+void Model::Render(GLenum topology) {
     glBindSampler(0, sampler.handle);
     for (size_t i = 0; i < meshes.size(); ++i) {
         const auto& mesh = meshes[i];
-        const auto texture_idx = mesh.material_index;
-        glBindTexture(GL_TEXTURE_2D, textures.at(texture_idx).handle);
-        mesh.Render();
+        if (!textures.empty()) {
+            const auto texture_idx = mesh.material_index;
+            glBindTexture(GL_TEXTURE_2D, textures.at(texture_idx).handle);
+        }
+        mesh.Render(topology);
     }
 }
 } // namespace Model

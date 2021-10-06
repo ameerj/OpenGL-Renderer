@@ -15,6 +15,8 @@ std::string_view NameOf(Scene scene) {
         return "Basic3D";
     case Scene::Phong3D:
         return "Phong3D";
+    case Scene::TessBezier:
+        return "TessBesizer";
     default:
         return "UNKNOWN";
     }
@@ -100,6 +102,7 @@ void Renderer::RenderLoop() {
         const auto up = glm::vec3(0.0, 1.0, 0.0);
         const auto view_matrix = glm::lookAt(eye, at, up);
         const auto model_view_matrix = view_matrix * model_matrix;
+        GLenum topology = GL_TRIANGLES;
 
         switch (current_scene) {
         case Scene::Basic3D: {
@@ -121,11 +124,34 @@ void Renderer::RenderLoop() {
             glUniform3fv(8, 1, &light_parameters.specular[0]);
             break;
         }
+        case Scene::TessBezier: {
+            glUniformMatrix4fv(0, 1, GL_FALSE, &model_view_matrix[0][0]);
+            glUniformMatrix4fv(1, 1, GL_FALSE, &projection_matrix[0][0]);
+            glUniform3f(2, 0.0f, 0.0f, 1.0f);
+
+            glUniform3f(3, 0.0f, 0.0f, 0.0f);
+            glUniform3f(4, 0.25f, 0.25f, 0.25f);
+            glUniform1f(5, light_parameters.shininess);
+
+            glUniform3fv(6, 1, &light_parameters.ambient[0]);
+            glUniform3fv(7, 1, &light_parameters.diffuse[0]);
+            glUniform3fv(8, 1, &light_parameters.specular[0]);
+
+            glUniform1f(9, 10.0f);
+            glUniform1f(10, 10.0f);
+            glUniform1f(11, 10.0f);
+            glUniform1f(12, 10.0f);
+
+            glPatchParameteri(GL_PATCH_VERTICES, 16);
+
+            topology = GL_PATCHES;
+            break;
+        }
         default:
             break;
         }
 
-        mesh_model.Render();
+        mesh_model.Render(topology);
 
         glfwPollEvents();
         glfwSwapBuffers(window);
@@ -163,6 +189,17 @@ void Renderer::SetScene(Scene scene) {
         projection_matrix = glm::perspective(glm::radians(45.0f), aspect_ratio, 0.01f, 100.0f);
         glClearColor(0.25, 0.25, 0.25, 0.0);
         break;
+    case Scene::TessBezier:
+        shader_program = Shaders::GetBezierShader();
+        SetBezierModel();
+        glUseProgram(shader_program.handle);
+
+        model_matrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.25f, 0.25f, 0.25f)) *
+                       glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0, 1, 0));
+
+        projection_matrix = glm::perspective(glm::radians(45.0f), aspect_ratio, 0.01f, 100.0f);
+        glClearColor(0.25, 0.25, 0.25, 0.0);
+        break;
     default:
         break;
     }
@@ -171,6 +208,10 @@ void Renderer::SetScene(Scene scene) {
 
 void Renderer::SetMeshModel(const std::string& path) {
     mesh_model.ParseObjModel(path);
+}
+
+void Renderer::SetBezierModel() {
+    mesh_model.CreateBezierBuffers();
 }
 
 void Renderer::InitWindow() {

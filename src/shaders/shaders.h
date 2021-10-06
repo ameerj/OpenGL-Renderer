@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glad/glad.h>
-
 #include "../resources/resources.h"
 
 namespace Shaders {
@@ -9,5 +7,7 @@ namespace Shaders {
 Program GetRasterShader();
 
 Program GetPhongShader();
+
+Program GetBezierShader();
 
 } // namespace Shaders

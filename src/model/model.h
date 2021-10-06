@@ -14,7 +14,9 @@ public:
 
     void ParseObjModel(const std::string& path);
 
-    void Render();
+    void CreateBezierBuffers();
+
+    void Render(GLenum topology);
 
 private:
     void ProcessAINode(aiNode* node, const aiScene* scene);

@@ -65,5 +65,8 @@
     <ClInclude Include="shaders\phong_shading.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="shaders\bezier_tess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

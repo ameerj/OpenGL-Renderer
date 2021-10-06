@@ -19,7 +19,7 @@ class Mesh {
 public:
     Mesh(const std::vector<Vertex>& vertices, const std::vector<u32>& indices, u32 mat_idx);
 
-    void Render() const;
+    void Render(GLenum topology = GL_TRIANGLES) const;
 
     u32 material_index;
 
