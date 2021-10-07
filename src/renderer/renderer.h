@@ -27,10 +27,11 @@ public:
 
     void SetBezierModel();
 
+    void KeyCallback(int key, int scancode, int action, int mods);
+
 private:
     void InitWindow();
     void ResetParameters();
-    void ProcessInput();
 
     u32 window_width{};
     u32 window_height{};

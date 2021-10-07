@@ -91,8 +91,6 @@ void Renderer::RenderLoop() {
     glEnable(GL_DEPTH_TEST);
 
     while (!glfwWindowShouldClose(window)) {
-        ProcessInput();
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         const auto eye = glm::vec3(camera_parameters.radius * std::cos(camera_parameters.theta),
@@ -137,10 +135,10 @@ void Renderer::RenderLoop() {
             glUniform3fv(7, 1, &light_parameters.diffuse[0]);
             glUniform3fv(8, 1, &light_parameters.specular[0]);
 
-            glUniform1f(9, bezier_parameters.outer02);
-            glUniform1f(10, bezier_parameters.outer13);
-            glUniform1f(11, 10.0f);
-            glUniform1f(12, 10.0f);
+            glUniform1f(9, bezier_parameters.inner0);
+            glUniform1f(10, bezier_parameters.inner1);
+            glUniform1f(11, bezier_parameters.inner0);
+            glUniform1f(12, bezier_parameters.inner1);
 
             glPatchParameteri(GL_PATCH_VERTICES, 16);
 
@@ -229,6 +227,12 @@ void Renderer::InitWindow() {
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, FbSizeCallback);
+    glfwSetWindowUserPointer(window, this);
+    auto func = [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+        static_cast<Renderer*>(glfwGetWindowUserPointer(window))
+            ->KeyCallback(key, scancode, action, mods);
+    };
+    glfwSetKeyCallback(window, func);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
@@ -252,7 +256,7 @@ void Renderer::ResetParameters() {
     light_parameters.specular = glm::vec3(0.5f);
 }
 
-void Renderer::ProcessInput() {
+void Renderer::KeyCallback(int key, int scancode, int action, int mods) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
@@ -319,19 +323,19 @@ void Renderer::ProcessInput() {
     light_parameters.specular = glm::clamp(light_parameters.specular, zero_vec3, one_vec3);
     light_parameters.shininess = glm::clamp(light_parameters.shininess, 1.0f, 1000.0f);
 
-    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_RELEASE) {
-        bezier_parameters.outer02 += 1.0f;
+    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
+        bezier_parameters.inner0 += 1.0f;
     }
-    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_RELEASE) {
-        bezier_parameters.outer02 -= 1.0f;
+    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
+        bezier_parameters.inner0 -= 1.0f;
     }
-    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_RELEASE) {
-        bezier_parameters.outer13 += 1.0f;
+    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
+        bezier_parameters.inner1 += 1.0f;
     }
-    if (glfwGetKey(window, GLFW_KEY_V) == GLFW_RELEASE) {
-        bezier_parameters.outer13 -= 1.0f;
+    if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS) {
+        bezier_parameters.inner1 -= 1.0f;
     }
-    bezier_parameters.outer02 = std::max(bezier_parameters.outer02, 2.0f);
-    bezier_parameters.outer13 = std::max(bezier_parameters.outer13, 2.0f);
+    bezier_parameters.inner0 = glm::clamp(bezier_parameters.inner0, 2.0f, 20.0f);
+    bezier_parameters.inner1 = glm::clamp(bezier_parameters.inner1, 2.0f, 20.0f);
 }
 } // namespace Renderer
