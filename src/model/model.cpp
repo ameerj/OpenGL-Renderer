@@ -64,7 +64,7 @@ void Model::ParseObjModel(const std::string& path) {
 void Model::CreateBezierBuffers() {
     meshes = std::vector<Mesh::Mesh>{};
     textures = std::vector<Texture>{};
-    /*
+    //*
     std::vector<Vertex> vertices{
         {{0.0, 0.0, 0.0}, {}, {}},  {{2.0, 0.0, 1.5}, {}, {}},  {{4.0, 0.0, 2.9}, {}, {}},
         {{6.0, 0.0, 0.0}, {}, {}},  {{0.0, 2.0, 1.1}, {}, {}},  {{2.0, 2.0, 3.9}, {}, {}},
@@ -73,7 +73,8 @@ void Model::CreateBezierBuffers() {
         {{0.0, 6.0, 0.3}, {}, {}},  {{2.0, 6.0, -1.1}, {}, {}}, {{4.0, 6.0, 1.3}, {}, {}},
         {{6.0, 6.0, -0.2}, {}, {}},
     };
-    */
+    //*/
+    /*
     std::vector<Vertex> vertices{
         {{0.0f, 2.0f, 0.0f}, {}, {}},  {{1.0f, 1.0f, 0.0f}, {}, {}}, {{2.0f, 1.0f, 0.0f}, {}, {}},
         {{3.0f, 2.0f, 0.0f}, {}, {}},  {{0.0f, 1.0f, 1.0f}, {}, {}}, {{1.0f, -2.0f, 1.0f}, {}, {}},
@@ -82,6 +83,7 @@ void Model::CreateBezierBuffers() {
         {{0.0f, 0.0f, 3.0f}, {}, {}},  {{1.0f, 1.0f, 3.0f}, {}, {}}, {{2.0f, -1.0f, 3.0f}, {}, {}},
         {{3.0f, -1.0f, 3.0f}, {}, {}},
     };
+    //*/
     meshes.push_back(Mesh::Mesh(vertices, {}, 0));
 }
 

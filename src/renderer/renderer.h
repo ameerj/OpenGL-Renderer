@@ -48,6 +48,13 @@ private:
         float shininess{20.0f};
     } light_parameters;
 
+    struct BezierParameters {
+        float outer02{10.0f};
+        float outer13{10.0f};
+        float inner0{10.0f};
+        float inner1{10.0f};
+    } bezier_parameters;
+
     GLFWwindow* window;
     Model::Model mesh_model;
     Program shader_program;
