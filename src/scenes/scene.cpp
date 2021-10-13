@@ -49,6 +49,6 @@ void Scene::KeyCallback(int key, int scancode, int action, int mods) {
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         camera_parameters.radius -= 0.1f;
     }
-    camera_parameters.radius = std::max(camera_parameters.radius, 1.0f);
+    camera_parameters.radius = glm::max(camera_parameters.radius, 1.0f);
 }
 } // namespace Scenes

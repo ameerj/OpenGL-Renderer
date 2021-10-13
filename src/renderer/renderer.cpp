@@ -99,7 +99,6 @@ void Renderer::SetScene(SceneName scene_name) {
     if (scene_name == current_scene) {
         return;
     }
-    current_scene = scene_name;
     switch (scene_name) {
     case SceneName::Basic3D:
         scene = std::make_unique<Scenes::Basic3D>(window, *this);
@@ -114,8 +113,9 @@ void Renderer::SetScene(SceneName scene_name) {
         scene = std::make_unique<Scenes::GeometryExplode>(window, *this);
         break;
     default:
-        break;
+        return;
     }
+    current_scene = scene_name;
     scene->Init();
     printf("Setting %s scene\n", scene->Name().data());
     glfwSetWindowUserPointer(window, scene.get());
@@ -133,7 +133,7 @@ float Renderer::GetAspectRatio() {
 void Renderer::InitWindow() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     window = glfwCreateWindow(window_width, window_height, "OpenGL Renderer", NULL, NULL);

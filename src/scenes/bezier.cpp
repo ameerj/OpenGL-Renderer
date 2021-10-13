@@ -65,7 +65,7 @@ void Bezier::KeyCallback(int key, int scancode, int action, int mods) {
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         camera_parameters.radius -= 0.1f;
     }
-    camera_parameters.radius = std::max(camera_parameters.radius, 1.0f);
+    camera_parameters.radius = glm::max(camera_parameters.radius, 1.0f);
     if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
         bezier_parameters.inner0 += 1.0f;
     }
