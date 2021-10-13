@@ -51,42 +51,6 @@ void Phong::ResetParameters() {
 }
 
 void Phong::KeyCallback(int key, int scancode, int action, int mods) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
-    }
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        ResetParameters();
-    }
-
-    for (auto num_key = GLFW_KEY_1; num_key <= GLFW_KEY_9; ++num_key) {
-        if (glfwGetKey(window, num_key) == GLFW_PRESS) {
-            renderer.SetScene(static_cast<Renderer::SceneName>(num_key - GLFW_KEY_0));
-            return;
-        }
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-        camera_parameters.theta += 0.05f;
-    }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        camera_parameters.theta -= 0.05f;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        camera_parameters.height += 0.1f;
-    }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        camera_parameters.height -= 0.1f;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-        camera_parameters.radius += 0.1f;
-    }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        camera_parameters.radius -= 0.1f;
-    }
-    camera_parameters.radius = glm::max(camera_parameters.radius, 1.0f);
-
     if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
         light_parameters.diffuse += 0.01f;
     }
@@ -117,5 +81,7 @@ void Phong::KeyCallback(int key, int scancode, int action, int mods) {
     light_parameters.ambient = glm::clamp(light_parameters.ambient, zero_vec3, one_vec3);
     light_parameters.specular = glm::clamp(light_parameters.specular, zero_vec3, one_vec3);
     light_parameters.shininess = glm::clamp(light_parameters.shininess, 1.0f, 1000.0f);
+
+    Scene::KeyCallback(key, scancode, action, mods);
 }
 } // namespace Scenes

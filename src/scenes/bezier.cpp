@@ -31,41 +31,6 @@ void Bezier::Configure() {
 }
 
 void Bezier::KeyCallback(int key, int scancode, int action, int mods) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
-    }
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        ResetParameters();
-    }
-
-    for (auto num_key = GLFW_KEY_1; num_key <= GLFW_KEY_9; ++num_key) {
-        if (glfwGetKey(window, num_key) == GLFW_PRESS) {
-            renderer.SetScene(static_cast<Renderer::SceneName>(num_key - GLFW_KEY_0));
-            return;
-        }
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-        camera_parameters.theta += 0.05f;
-    }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        camera_parameters.theta -= 0.05f;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        camera_parameters.height += 0.1f;
-    }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        camera_parameters.height -= 0.1f;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-        camera_parameters.radius += 0.1f;
-    }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        camera_parameters.radius -= 0.1f;
-    }
-    camera_parameters.radius = glm::max(camera_parameters.radius, 1.0f);
     if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
         bezier_parameters.inner0 += 1.0f;
     }
@@ -80,6 +45,8 @@ void Bezier::KeyCallback(int key, int scancode, int action, int mods) {
     }
     bezier_parameters.inner0 = glm::clamp(bezier_parameters.inner0, 2.0f, 20.0f);
     bezier_parameters.inner1 = glm::clamp(bezier_parameters.inner1, 2.0f, 20.0f);
+
+    Scene::KeyCallback(key, scancode, action, mods);
 }
 
 void Bezier::Render() {
