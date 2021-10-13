@@ -49,8 +49,8 @@ void main() {
     vec3 normal = normalize(cross(side_1, side_0));
 
     for (int i = 0; i < 3; ++i) {
-        vec3 offset = normal * ((sin(time) + 1.0) / 4.0);
-        gl_Position = projection * gl_in[i].gl_Position + vec4(offset, 1);
+        vec3 offset = normal * ((sin(time * 1.5) + 1.0) / 3.0);
+        gl_Position = projection * (gl_in[i].gl_Position + vec4(offset, 1));
         frag_coord = vs_coord[i];
         frag_normal = vs_normal[i];
         frag_light = vs_light[i];
