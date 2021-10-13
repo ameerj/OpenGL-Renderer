@@ -12,6 +12,7 @@ enum class Scene : u8 {
     Basic3D,
     Phong3D,
     TessBezier,
+    GeomExplode,
 };
 
 class Renderer {

@@ -68,5 +68,8 @@
     <ClInclude Include="shaders\bezier_tess.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="shaders\geometry_shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

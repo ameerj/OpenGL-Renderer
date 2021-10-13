@@ -10,4 +10,6 @@ Program GetPhongShader();
 
 Program GetBezierShader();
 
+Program GetGeometryShader();
+
 } // namespace Shaders
