@@ -18,7 +18,7 @@ int main() {
 
     Renderer::Renderer renderer(width, height);
 
-    renderer.SetScene(Renderer::Scene::Basic3D);
+    renderer.SetScene(Renderer::SceneName::Basic3D);
     renderer.RenderLoop();
 
     return 0;

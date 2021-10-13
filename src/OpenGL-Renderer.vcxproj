@@ -160,22 +160,32 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\externals\glad\src\glad.c" />
+    <ClCompile Include="scenes\bezier.cpp" />
+    <ClCompile Include="scenes\geometry_explode.cpp" />
+    <ClCompile Include="scenes\basic_3d.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="model\mesh.cpp" />
     <ClCompile Include="model\model.cpp" />
     <ClCompile Include="renderer\renderer.cpp" />
     <ClCompile Include="resources\resources.cpp" />
+    <ClCompile Include="scenes\phong.cpp" />
+    <ClCompile Include="scenes\scene.cpp" />
     <ClCompile Include="shaders\shaders.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assimp-vc142-mt.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="scenes\bezier.h" />
+    <ClInclude Include="scenes\geometry_explode.h" />
+    <ClInclude Include="scenes\basic_3d.h" />
     <ClInclude Include="common\common_types.h" />
     <ClInclude Include="model\mesh.h" />
     <ClInclude Include="model\model.h" />
     <ClInclude Include="renderer\renderer.h" />
     <ClInclude Include="resources\resources.h" />
+    <ClInclude Include="scenes\phong.h" />
+    <ClInclude Include="scenes\scene.h" />
     <ClInclude Include="shaders\basic_rasterizer.h" />
     <ClInclude Include="shaders\bezier_tess.h" />
     <ClInclude Include="shaders\geometry_shader.h" />
