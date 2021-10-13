@@ -35,23 +35,29 @@ layout (location = 1) in vec3 vs_normal[];
 layout (location = 2) in vec3 vs_light[];
 layout (location = 3) in vec3 vs_eye[];
 
-
 layout (location = 0) out vec2 frag_coord;
 layout (location = 1) out vec3 frag_normal;
 layout (location = 2) out vec3 frag_light;
 layout (location = 3) out vec3 frag_eye;
 
 layout (location = 1) uniform mat4 projection;
+layout (location = 9) uniform float time;
 
 void main() {
+    vec3 side_0 = (gl_in[0].gl_Position - gl_in[1].gl_Position).xyz;
+    vec3 side_1 = (gl_in[2].gl_Position - gl_in[1].gl_Position).xyz;
+    vec3 normal = normalize(cross(side_1, side_0));
+
     for (int i = 0; i < 3; ++i) {
-        gl_Position = projection * gl_in[i].gl_Position;
+        vec3 offset = normal * ((sin(time) + 1.0) / 4.0);
+        gl_Position = projection * gl_in[i].gl_Position + vec4(offset, 1);
         frag_coord = vs_coord[i];
         frag_normal = vs_normal[i];
         frag_light = vs_light[i];
         frag_eye = vs_eye[i];
         EmitVertex();
     }
+    EndPrimitive();
 }
 )";
 

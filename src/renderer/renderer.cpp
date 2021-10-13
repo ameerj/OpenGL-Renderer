@@ -137,7 +137,10 @@ void Renderer::RenderLoop() {
         default:
             break;
         }
-
+        // TODO: cleanup
+        if (current_scene == Scene::GeomExplode) {
+            glUniform1f(9, glfwGetTime());
+        }
         mesh_model.Render(topology);
 
         glfwPollEvents();
