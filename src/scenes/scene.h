@@ -41,6 +41,7 @@ protected:
     GLFWwindow* window;
     Renderer::Renderer& renderer;
 
+    bool using_geometry_shader{};
     Program shader_program;
     Model::Model mesh_model;
 

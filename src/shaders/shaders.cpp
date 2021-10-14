@@ -9,6 +9,7 @@
 
 #include "../common/common_types.h"
 #include "basic_rasterizer.h"
+#include "bezier_geom.h"
 #include "bezier_tess.h"
 #include "geometry_shader.h"
 #include "phong_shading.h"
@@ -102,6 +103,7 @@ Program GetBezierShader() {
 
     return program;
 }
+
 Program GetGeometryShader() {
     const char* vertex_shader_code = explode_vert.data();
     const char* geometry_shader_code = explode_geom.data();
@@ -115,6 +117,32 @@ Program GetGeometryShader() {
     program.handle = glCreateProgram();
 
     glAttachShader(program.handle, vertex.handle);
+    glAttachShader(program.handle, geom.handle);
+    glAttachShader(program.handle, fragment.handle);
+    LinkProgram(program.handle);
+
+    return program;
+}
+
+Program GetGeometryBezierShader() {
+    const char* vertex_shader_code = bezier_vert.data();
+    const char* tess_control_shader_code = bezier_tcs.data();
+    const char* tess_eval_shader_code = bezier_tes.data();
+    const char* geometry_shader_code = bezier_geom.data();
+    const char* fragment_shader_code = bezier_frag.data();
+
+    const Shader vertex = CompileShader(GL_VERTEX_SHADER, vertex_shader_code);
+    const Shader tcs = CompileShader(GL_TESS_CONTROL_SHADER, tess_control_shader_code);
+    const Shader tes = CompileShader(GL_TESS_EVALUATION_SHADER, tess_eval_shader_code);
+    const Shader geom = CompileShader(GL_GEOMETRY_SHADER, geometry_shader_code);
+    const Shader fragment = CompileShader(GL_FRAGMENT_SHADER, fragment_shader_code);
+
+    Program program;
+    program.handle = glCreateProgram();
+
+    glAttachShader(program.handle, vertex.handle);
+    glAttachShader(program.handle, tcs.handle);
+    glAttachShader(program.handle, tes.handle);
     glAttachShader(program.handle, geom.handle);
     glAttachShader(program.handle, fragment.handle);
     LinkProgram(program.handle);

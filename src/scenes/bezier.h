@@ -12,6 +12,8 @@ public:
 
     void KeyCallback(int key, int scancode, int action, int mods) override;
 
+    void ResetParameters() override;
+
     void Render() override;
 
     std::string_view Name() override {
@@ -20,10 +22,10 @@ public:
 
 private:
     struct BezierParameters {
-        float outer02{10.0f};
-        float outer13{10.0f};
-        float inner0{10.0f};
-        float inner1{10.0f};
+        float outer02{8.0f};
+        float outer13{8.0f};
+        float inner0{8.0f};
+        float inner1{8.0f};
     } bezier_parameters;
 };
 } // namespace Scenes

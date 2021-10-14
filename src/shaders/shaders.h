@@ -12,4 +12,6 @@ Program GetBezierShader();
 
 Program GetGeometryShader();
 
+Program GetGeometryBezierShader();
+
 } // namespace Shaders
