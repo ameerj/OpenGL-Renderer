@@ -56,10 +56,6 @@ const char* GetType(GLenum type) {
     }
 }
 
-void FbSizeCallback(GLFWwindow* window, int width, int height) {
-    glViewport(0, 0, width, height);
-}
-
 void DebugMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
                   const GLchar* message, const void* userParam) {
     switch (severity) {
@@ -118,16 +114,10 @@ void Renderer::SetScene(SceneName scene_name) {
     current_scene = scene_name;
     scene->Init();
     printf("Setting %s scene\n", scene->Name().data());
-    glfwSetWindowUserPointer(window, scene.get());
-    auto func = [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-        static_cast<Scenes::Scene*>(glfwGetWindowUserPointer(window))
-            ->KeyCallback(key, scancode, action, mods);
-    };
-    glfwSetKeyCallback(window, func);
 }
 
 float Renderer::GetAspectRatio() {
-    return (f32)window_width / window_height;
+    return static_cast<f32>(window_width) / static_cast<f32>(window_height);
 }
 
 void Renderer::InitWindow() {
@@ -143,7 +133,21 @@ void Renderer::InitWindow() {
         return;
     }
     glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, FbSizeCallback);
+
+    glfwSetWindowUserPointer(window, this);
+
+    auto fb_size_callback = [](GLFWwindow* window, int width, int height) {
+        auto* renderer = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
+        renderer->FramebufferSizeCallback(window, width, height);
+    };
+    glfwSetFramebufferSizeCallback(window, fb_size_callback);
+
+    auto key_callback = [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+        auto* renderer = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
+        renderer->KeyCallback(key, scancode, action, mods);
+    };
+    glfwSetKeyCallback(window, key_callback);
+
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return;
@@ -156,4 +160,16 @@ void Renderer::InitWindow() {
 
     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
 }
+
+void Renderer::KeyCallback(int key, int scancode, int action, int mods) {
+    scene->KeyCallback(key, scancode, action, mods);
+}
+
+void Renderer::FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+    window_width = static_cast<u32>(width);
+    window_height = static_cast<u32>(height);
+    scene->UpdateProjMtx();
+}
+
 } // namespace Renderer

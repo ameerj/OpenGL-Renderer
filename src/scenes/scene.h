@@ -23,6 +23,8 @@ public:
     virtual void Configure() = 0;
     virtual void Render() = 0;
 
+    virtual void UpdateProjMtx();
+
     virtual void ResetParameters();
 
     virtual void KeyCallback(int key, int scancode, int action, int mods);
@@ -38,14 +40,14 @@ protected:
         float theta{};
     } camera_parameters{};
 
-    GLFWwindow* window;
+    GLFWwindow* window{};
     Renderer::Renderer& renderer;
 
     bool using_geometry_shader{};
-    Program shader_program;
-    Model::Model mesh_model;
+    Program shader_program{};
+    Model::Model mesh_model{};
 
-    glm::mat4 model_matrix;
-    glm::mat4 projection_matrix;
+    glm::mat4 model_matrix{};
+    glm::mat4 projection_matrix{};
 };
 } // namespace Scenes

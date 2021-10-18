@@ -34,6 +34,11 @@ public:
 
 private:
     void InitWindow();
+
+    void KeyCallback(int key, int scancode, int action, int mods);
+
+    void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
+
     u32 window_width{};
     u32 window_height{};
 

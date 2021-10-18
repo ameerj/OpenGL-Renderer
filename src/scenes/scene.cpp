@@ -1,5 +1,7 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "../renderer/renderer.h"
 #include "scene.h"
@@ -7,6 +9,11 @@
 namespace Scenes {
 Scene::Scene(GLFWwindow* window_, Renderer::Renderer& renderer_)
     : window{window_}, renderer{renderer_} {}
+
+void Scene::UpdateProjMtx() {
+    const f32 aspect_ratio = renderer.GetAspectRatio();
+    projection_matrix = glm::perspective(glm::radians(45.0f), aspect_ratio, 0.01f, 100.0f);
+}
 
 void Scene::ResetParameters() {
     camera_parameters.radius = 5;
