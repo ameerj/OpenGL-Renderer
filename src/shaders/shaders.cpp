@@ -34,7 +34,7 @@ void LinkProgram(GLuint handle) {
 
     GLint log_length{};
     glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &log_length);
-    if (log_length == 0) {
+    if (log_length <= 1) {
         return;
     }
     std::string log(log_length, 0);

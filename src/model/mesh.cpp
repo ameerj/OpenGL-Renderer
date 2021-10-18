@@ -5,8 +5,9 @@ Mesh::Mesh(const std::vector<Vertex>& vertices_, const std::vector<u32>& indices
     : vertices{vertices_}, indices{indices_}, material_index{mat_idx} {
     if (!vertices.empty()) {
         vertex_buffer.Create();
-        glNamedBufferData(vertex_buffer.handle, vertices.size() * sizeof(vertices[0]),
-                          vertices.data(), GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer.handle);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices[0]), vertices.data(),
+                     GL_STATIC_DRAW);
         vertex_array_object.Create();
         glBindVertexArray(vertex_array_object.handle);
     }
@@ -19,12 +20,12 @@ Mesh::Mesh(const std::vector<Vertex>& vertices_, const std::vector<u32>& indices
 }
 
 void Mesh::Render(GLenum topology) const {
+    static constexpr GLuint PositionLocation = 0;
+    static constexpr GLuint NormalLocation = 1;
+    static constexpr GLuint TextureCoordsLocation = 2;
+    
     glBindVertexArray(vertex_array_object.handle);
-    glVertexArrayVertexBuffer(vertex_array_object.handle, 0, vertex_buffer.handle, 0,
-                              sizeof(vertices[0]));
-    constexpr GLuint PositionLocation = 0;
-    constexpr GLuint NormalLocation = 1;
-    constexpr GLuint TextureCoordsLocation = 2;
+    glBindVertexBuffer(0, vertex_buffer.handle, 0, sizeof(vertices[0]));
 
     glEnableVertexAttribArray(PositionLocation);
     glVertexAttribFormat(PositionLocation, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));

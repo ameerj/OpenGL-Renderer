@@ -21,7 +21,7 @@ void Program::Release() {
 void Buffer::Create() {
     if (handle != 0)
         return;
-    glCreateBuffers(1, &handle);
+    glGenBuffers(1, &handle);
 }
 
 void Buffer::Release() {
@@ -47,7 +47,7 @@ void VAO::Release() {
 void Texture::Create() {
     if (handle != 0)
         return;
-    glCreateTextures(GL_TEXTURE_2D, 1, &handle);
+    glGenTextures(1, &handle);
 }
 
 void Texture::Release() {
@@ -64,16 +64,17 @@ void Texture::UploadDataFromPath(const std::string& path) {
         printf("Failed to find: %s\n", path.c_str());
         return;
     }
+    glBindTexture(GL_TEXTURE_2D, handle);
     if (bit_depth == 3) {
         glTextureStorage2D(handle, 1, GL_RGB8, width, height);
     } else if (bit_depth == 4) {
-        glTextureStorage2D(handle, 1, GL_RGBA8, width, height);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                     texture_data);
     } else {
         printf("Unimplemented texture bit depth: %d\n", bit_depth);
         glTextureStorage2D(handle, 1, GL_RGBA8, width, height);
     }
-    glTextureSubImage2D(handle, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
-    glGenerateTextureMipmap(handle);
+    glGenerateMipmap(GL_TEXTURE_2D);
 
     stbi_image_free(texture_data);
 }
@@ -81,7 +82,7 @@ void Texture::UploadDataFromPath(const std::string& path) {
 void Sampler::Create() {
     if (handle != 0)
         return;
-    glCreateSamplers(1, &handle);
+    glGenSamplers(1, &handle);
 }
 
 void Sampler::Release() {
