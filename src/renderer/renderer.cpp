@@ -148,6 +148,12 @@ void Renderer::InitWindow() {
     };
     glfwSetKeyCallback(window, key_callback);
 
+    auto mouse_callback = [](GLFWwindow* window, int button, int action, int mods) {
+        auto* renderer = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
+        renderer->MouseCallback(window, button, action, mods);
+    };
+    glfwSetMouseButtonCallback(window, mouse_callback);
+
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return;
@@ -163,6 +169,15 @@ void Renderer::InitWindow() {
 
 void Renderer::KeyCallback(int key, int scancode, int action, int mods) {
     scene->KeyCallback(key, scancode, action, mods);
+}
+
+void Renderer::MouseCallback(GLFWwindow* window, int button, int action, int mods) {
+    if (action == GLFW_PRESS) {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        printf("%lf, %lf\n", xpos, ypos);
+    }
+    scene->MouseCallback(window, button, action, mods);
 }
 
 void Renderer::FramebufferSizeCallback(GLFWwindow* window, int width, int height) {

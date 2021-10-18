@@ -36,6 +36,8 @@ private:
     void InitWindow();
 
     void KeyCallback(int key, int scancode, int action, int mods);
+    
+    void MouseCallback(GLFWwindow* window, int button, int action, int mods);
 
     void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
 
