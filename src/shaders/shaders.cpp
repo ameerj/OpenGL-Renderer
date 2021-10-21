@@ -162,6 +162,10 @@ Program GetTfbShader() {
 
     glAttachShader(program.handle, vertex.handle);
     glAttachShader(program.handle, fragment.handle);
+
+    const GLchar* tfb_attrs[] = {"transformed_coord", "tfb_normal", "tfb_tex_coord"};
+    glTransformFeedbackVaryings(program.handle, 3, tfb_attrs, GL_INTERLEAVED_ATTRIBS);
+
     LinkProgram(program.handle);
 
     return program;

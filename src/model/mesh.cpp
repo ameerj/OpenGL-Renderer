@@ -19,13 +19,19 @@ Mesh::Mesh(const std::vector<Vertex>& vertices_, const std::vector<u32>& indices
     }
 }
 
+Mesh::Mesh(const std::vector<Vertex>& vertices_) : Mesh(vertices_, {}, 0) {}
+
 void Mesh::Render(GLenum topology) const {
+    Render(topology, vertex_buffer.handle);
+}
+
+void Mesh::Render(GLenum topology, GLenum vbo_handle) const {
     static constexpr GLuint PositionLocation = 0;
     static constexpr GLuint NormalLocation = 1;
     static constexpr GLuint TextureCoordsLocation = 2;
-    
+
     glBindVertexArray(vertex_array_object.handle);
-    glBindVertexBuffer(0, vertex_buffer.handle, 0, sizeof(vertices[0]));
+    glBindVertexBuffer(0, vbo_handle, 0, sizeof(vertices[0]));
 
     glEnableVertexAttribArray(PositionLocation);
     glVertexAttribFormat(PositionLocation, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
