@@ -12,8 +12,14 @@ public:
 
     void Render() override;
 
+    void MouseCallback(GLFWwindow* window, int button, int action, int mods) override;
+
     std::string_view Name() override {
         return "TFBDemo";
     }
+
+private:
+    double mouse_x_pos{};
+    double mouse_y_pos{};
 };
 } // namespace Scenes

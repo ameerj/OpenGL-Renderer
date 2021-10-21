@@ -176,11 +176,6 @@ void Renderer::KeyCallback(int key, int scancode, int action, int mods) {
 }
 
 void Renderer::MouseCallback(GLFWwindow* window, int button, int action, int mods) {
-    if (action == GLFW_PRESS) {
-        double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
-        printf("%lf, %lf\n", xpos, ypos);
-    }
     scene->MouseCallback(window, button, action, mods);
 }
 

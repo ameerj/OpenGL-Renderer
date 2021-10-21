@@ -33,10 +33,21 @@ void TFBDemo::Init() {
 
 void TFBDemo::Configure() {
     glEnable(GL_PROGRAM_POINT_SIZE);
+    glUniform2f(0, mouse_x_pos, mouse_y_pos);
 }
 
 void TFBDemo::Render() {
     mesh_model.Render(GL_POINTS);
+}
+
+void TFBDemo::MouseCallback(GLFWwindow* window, int button, int action, int mods) {
+    if (action == GLFW_PRESS) {
+        glfwGetCursorPos(window, &mouse_x_pos, &mouse_y_pos);
+        mouse_x_pos = 2.0 * (mouse_x_pos / static_cast<double>(renderer.GetWindowWidth())) - 1.0;
+        mouse_y_pos =
+            2.0 * (1.0 - (mouse_y_pos / static_cast<double>(renderer.GetWindowHeight()))) - 1.0;
+        printf("%lf, %lf\n", mouse_x_pos, mouse_y_pos);
+    }
 }
 
 } // namespace Scenes

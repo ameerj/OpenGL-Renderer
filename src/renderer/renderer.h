@@ -33,6 +33,14 @@ public:
 
     float GetAspectRatio();
 
+    u32 GetWindowWidth() {
+        return window_width;
+    }
+
+    u32 GetWindowHeight() {
+        return window_height;
+    }
+
 private:
     void InitWindow();
 
