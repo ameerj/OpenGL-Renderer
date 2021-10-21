@@ -12,6 +12,7 @@
 #include "../scenes/geometry_explode.h"
 #include "../scenes/phong.h"
 #include "../scenes/scene.h"
+#include "../scenes/tfb_particles.h"
 #include "renderer.h"
 
 namespace Renderer {
@@ -107,6 +108,9 @@ void Renderer::SetScene(SceneName scene_name) {
         break;
     case SceneName::GeomExplode:
         scene = std::make_unique<Scenes::GeometryExplode>(window, *this);
+        break;
+    case SceneName::TFBDemo:
+        scene = std::make_unique<Scenes::TFBDemo>(window, *this);
         break;
     default:
         return;

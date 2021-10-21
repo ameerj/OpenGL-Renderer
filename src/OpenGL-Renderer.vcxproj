@@ -170,6 +170,7 @@
     <ClCompile Include="resources\resources.cpp" />
     <ClCompile Include="scenes\phong.cpp" />
     <ClCompile Include="scenes\scene.cpp" />
+    <ClCompile Include="scenes\tfb_particles.cpp" />
     <ClCompile Include="shaders\shaders.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -186,12 +187,14 @@
     <ClInclude Include="resources\resources.h" />
     <ClInclude Include="scenes\phong.h" />
     <ClInclude Include="scenes\scene.h" />
+    <ClInclude Include="scenes\tfb_particles.h" />
     <ClInclude Include="shaders\basic_rasterizer.h" />
     <ClInclude Include="shaders\bezier_geom.h" />
     <ClInclude Include="shaders\bezier_tess.h" />
     <ClInclude Include="shaders\geometry_shader.h" />
     <ClInclude Include="shaders\phong_shading.h" />
     <ClInclude Include="shaders\shaders.h" />
+    <ClInclude Include="shaders\tfb_particles.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -14,6 +14,7 @@
 #include "geometry_shader.h"
 #include "phong_shading.h"
 #include "shaders.h"
+#include "tfb_particles.h"
 
 namespace Shaders {
 namespace {
@@ -144,6 +145,22 @@ Program GetGeometryBezierShader() {
     glAttachShader(program.handle, tcs.handle);
     glAttachShader(program.handle, tes.handle);
     glAttachShader(program.handle, geom.handle);
+    glAttachShader(program.handle, fragment.handle);
+    LinkProgram(program.handle);
+
+    return program;
+}
+Program GetTfbShader() {
+    const char* vertex_shader_code = tfb_vert.data();
+    const char* fragment_shader_code = tfb_frag.data();
+
+    const Shader vertex = CompileShader(GL_VERTEX_SHADER, vertex_shader_code);
+    const Shader fragment = CompileShader(GL_FRAGMENT_SHADER, fragment_shader_code);
+
+    Program program;
+    program.handle = glCreateProgram();
+
+    glAttachShader(program.handle, vertex.handle);
     glAttachShader(program.handle, fragment.handle);
     LinkProgram(program.handle);
 

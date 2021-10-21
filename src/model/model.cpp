@@ -65,14 +65,17 @@ void Model::CreateBezierBuffers() {
     meshes = std::vector<Mesh::Mesh>{};
     textures = std::vector<Texture>{};
     const std::vector<Vertex> control_points{
-        {{0.0, 0.0, 0.0}, {}, {}},  {{2.0, 0.0, 1.5}, {}, {}},  {{4.0, 0.0, 2.9}, {}, {}},
-        {{6.0, 0.0, 0.0}, {}, {}},  {{0.0, 2.0, 1.1}, {}, {}},  {{2.0, 2.0, 3.9}, {}, {}},
-        {{4.0, 2.0, 3.1}, {}, {}},  {{6.0, 2.0, 0.7}, {}, {}},  {{0.0, 4.0, -0.5}, {}, {}},
-        {{2.0, 4.0, 2.6}, {}, {}},  {{4.0, 4.0, 2.4}, {}, {}},  {{6.0, 4.0, 0.4}, {}, {}},
-        {{0.0, 6.0, -0.5}, {}, {}}, {{2.0, 6.0, -0.1}, {}, {}}, {{4.0, 6.0, 1.3}, {}, {}},
-        {{6.0, 6.0, -0.2}, {}, {}},
+        {{0.0, 0.0, 0.0}},  {{2.0, 0.0, 1.5}},  {{4.0, 0.0, 2.9}}, {{6.0, 0.0, 0.0}},
+        {{0.0, 2.0, 1.1}},  {{2.0, 2.0, 3.9}},  {{4.0, 2.0, 3.1}}, {{6.0, 2.0, 0.7}},
+        {{0.0, 4.0, -0.5}}, {{2.0, 4.0, 2.6}},  {{4.0, 4.0, 2.4}}, {{6.0, 4.0, 0.4}},
+        {{0.0, 6.0, -0.5}}, {{2.0, 6.0, -0.1}}, {{4.0, 6.0, 1.3}}, {{6.0, 6.0, -0.2}},
     };
-    meshes.push_back(Mesh::Mesh(control_points, {}, 0));
+    AddMesh(control_points);
+}
+
+void Model::AddMesh(const std::vector<Vertex>& vertices, const std::vector<u32>& indices,
+                    u32 mat_idx) {
+    meshes.push_back(Mesh::Mesh(vertices, indices, mat_idx));
 }
 
 void Model::ProcessAINode(aiNode* node, const aiScene* scene) {

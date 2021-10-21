@@ -16,6 +16,9 @@ public:
 
     void CreateBezierBuffers();
 
+    void AddMesh(const std::vector<Vertex>& vertices, const std::vector<u32>& indices = {},
+                 u32 mat_idx = 0);
+
     void Render(GLenum topology);
 
 private:
