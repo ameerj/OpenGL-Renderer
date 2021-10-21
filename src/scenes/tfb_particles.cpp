@@ -24,13 +24,13 @@ Vertex Random2DNormalized() {
 } // namespace
 
 void TFBDemo::Init() {
-    std::vector<Vertex> points(3000);
+    std::vector<Vertex> points(20000);
     std::generate(points.begin(), points.end(), Random2DNormalized);
     mesh = std::make_unique<Mesh::Mesh>(points);
     shader_program = Shaders::GetTfbShader();
     glUseProgram(shader_program.handle);
 
-    glClearColor(0.25, 0.25, 0.25, 0.0);
+    glClearColor(0.0, 0.0, 0.0, 0.0);
 
     tfb_buffer.Create();
     glBindBuffer(GL_ARRAY_BUFFER, tfb_buffer.handle);
@@ -41,6 +41,8 @@ void TFBDemo::Init() {
 void TFBDemo::Configure() {
     glEnable(GL_PROGRAM_POINT_SIZE);
     glUniform2f(0, mouse_x_pos, mouse_y_pos);
+
+    glUniform1ui(1, invert_gravity ? 1u : 0u);
 
     const auto tfb_handle = use_tfb_vbo ? mesh->VertexBuffer() : tfb_buffer.handle;
     glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, tfb_handle);
@@ -56,11 +58,18 @@ void TFBDemo::Render() {
 }
 
 void TFBDemo::MouseCallback(GLFWwindow* window, int button, int action, int mods) {
-    if (action == GLFW_PRESS) {
+    if (action != GLFW_PRESS) {
+        return;
+    }
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
         glfwGetCursorPos(window, &mouse_x_pos, &mouse_y_pos);
-        mouse_x_pos = 2.0 * (mouse_x_pos / static_cast<double>(renderer.GetWindowWidth())) - 1.0;
-        mouse_y_pos =
-            2.0 * (1.0 - (mouse_y_pos / static_cast<double>(renderer.GetWindowHeight()))) - 1.0;
+        const auto window_width = static_cast<double>(renderer.GetWindowWidth());
+        const auto window_height = static_cast<double>(renderer.GetWindowHeight());
+        mouse_x_pos = 2.0 * (mouse_x_pos / window_width) - 1.0;
+        mouse_y_pos = 2.0 * (1.0 - (mouse_y_pos / window_height)) - 1.0;
+    }
+    if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+        invert_gravity = !invert_gravity;
     }
 }
 

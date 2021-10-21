@@ -12,10 +12,21 @@ layout (location = 1) out vec3 tfb_normal;
 layout (location = 2) out vec2 tfb_tex_coord;
 
 layout (location = 0) uniform vec2 click_pos;
+layout (location = 1) uniform uint invert;
 
 void main() {
-    gl_PointSize = 5.0f;
-    transformed_coord = coord + vec3((click_pos - coord.xy) / 700.0f, 0.0f);
+    float click_distance = distance(click_pos, coord.xy);
+    bool close = click_distance <= 0.5;
+    float pull_factor = close ? 1.0 - click_distance : 1.0;
+
+    vec3 offset = vec3((click_pos - coord.xy) / (700.0f * pull_factor), 0.0f);
+    if (invert != 0) {
+        transformed_coord = coord - offset;
+    } else {
+        transformed_coord = coord + offset;
+    }
+
+    gl_PointSize = 2.0f;
     gl_Position = vec4(transformed_coord, 1.0f);
     tfb_normal = normal;
     tfb_tex_coord = tex_coord;

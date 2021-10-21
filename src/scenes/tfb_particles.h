@@ -25,5 +25,6 @@ private:
     double mouse_x_pos{};
     double mouse_y_pos{};
     bool use_tfb_vbo{};
+    bool invert_gravity{};
 };
 } // namespace Scenes
