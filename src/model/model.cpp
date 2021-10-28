@@ -47,11 +47,12 @@ Mesh::Mesh ProcessMesh(const aiMesh* const mesh, const aiScene* const scene) {
 void Model::ParseObjModel(const std::string& path) {
     auto default_scale = glm::vec3(0.25f, 0.25f, 0.25f);
     auto default_translate = glm::vec3(0.0f);
-    ParseObjModel(path, default_scale, default_translate, 180.0f);
+    auto default_rotate = glm::vec3(0.0f, 180.0f, 0.0f);
+    ParseObjModel(path, default_scale, default_translate, default_rotate);
 }
 
-void Model::ParseObjModel(const std::string& path, glm::vec3& scale, glm::vec3& translate,
-                          float rotate) {
+void Model::ParseObjModel(const std::string& path, const glm::vec3& scale,
+                          const glm::vec3& translate, const glm::vec3& rotate) {
     Assimp::Importer importer;
     const aiScene* scene =
         importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs |
@@ -69,8 +70,13 @@ void Model::ParseObjModel(const std::string& path, glm::vec3& scale, glm::vec3& 
     sampler.Create();
     sampler.DefaultConfiguration();
 
-    model_matrix = glm::scale(glm::mat4(1.0f), scale) *
-                   glm::rotate(glm::mat4(1.0f), glm::radians(rotate), glm::vec3(0, 1, 0));
+    model_matrix = glm::scale(model_matrix, scale);
+
+    model_matrix = glm::rotate(model_matrix, glm::radians(rotate.x), glm::vec3(1, 0, 0));
+    model_matrix = glm::rotate(model_matrix, glm::radians(rotate.y), glm::vec3(0, 1, 0));
+    model_matrix = glm::rotate(model_matrix, glm::radians(rotate.z), glm::vec3(0, 0, 1));
+
+    model_matrix = glm::translate(model_matrix, translate);
 }
 
 void Model::CreateBezierBuffers() {

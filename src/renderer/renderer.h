@@ -20,6 +20,7 @@ enum class SceneName : u8 {
     TessBezier,
     GeomExplode,
     TFBDemo,
+    Shadows,
 };
 
 class Renderer {

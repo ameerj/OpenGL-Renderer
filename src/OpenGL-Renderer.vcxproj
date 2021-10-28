@@ -170,6 +170,7 @@
     <ClCompile Include="resources\resources.cpp" />
     <ClCompile Include="scenes\phong.cpp" />
     <ClCompile Include="scenes\scene.cpp" />
+    <ClCompile Include="scenes\shadows.cpp" />
     <ClCompile Include="scenes\tfb_particles.cpp" />
     <ClCompile Include="shaders\shaders.cpp" />
   </ItemGroup>
@@ -187,6 +188,7 @@
     <ClInclude Include="resources\resources.h" />
     <ClInclude Include="scenes\phong.h" />
     <ClInclude Include="scenes\scene.h" />
+    <ClInclude Include="scenes\shadows.h" />
     <ClInclude Include="scenes\tfb_particles.h" />
     <ClInclude Include="shaders\basic_rasterizer.h" />
     <ClInclude Include="shaders\bezier_geom.h" />

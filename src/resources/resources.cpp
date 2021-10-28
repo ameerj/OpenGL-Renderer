@@ -66,7 +66,8 @@ void Texture::UploadDataFromPath(const std::string& path) {
     }
     glBindTexture(GL_TEXTURE_2D, handle);
     if (bit_depth == 3) {
-        glTextureStorage2D(handle, 1, GL_RGB8, width, height);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE,
+                     texture_data);
     } else if (bit_depth == 4) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                      texture_data);

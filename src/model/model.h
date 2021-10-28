@@ -15,8 +15,8 @@ public:
 
     void ParseObjModel(const std::string& path);
 
-    void ParseObjModel(const std::string& path, glm::vec3& scale, glm::vec3& translate,
-                       float rotate);
+    void ParseObjModel(const std::string& path, const glm::vec3& scale, const glm::vec3& translate,
+                       const glm::vec3& rotate);
 
     void CreateBezierBuffers();
 
@@ -37,7 +37,7 @@ private:
     std::vector<Mesh::Mesh> meshes;
     std::vector<Texture> textures;
     Sampler sampler;
-    glm::mat4 model_matrix{};
+    glm::mat4 model_matrix{glm::mat4(1.0f)};
 };
 
 } // namespace Model

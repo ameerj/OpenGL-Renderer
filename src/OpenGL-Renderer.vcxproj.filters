@@ -54,6 +54,9 @@
     <ClCompile Include="scenes\tfb_particles.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="scenes\shadows.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="assimp-vc142-mt.dll" />
@@ -111,6 +114,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="shaders\tfb_particles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scenes\shadows.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

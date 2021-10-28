@@ -12,6 +12,7 @@
 #include "../scenes/geometry_explode.h"
 #include "../scenes/phong.h"
 #include "../scenes/scene.h"
+#include "../scenes/shadows.h"
 #include "../scenes/tfb_particles.h"
 #include "renderer.h"
 
@@ -111,6 +112,9 @@ void Renderer::SetScene(SceneName scene_name) {
         break;
     case SceneName::TFBDemo:
         scene = std::make_unique<Scenes::TFBDemo>(window, *this);
+        break;
+    case SceneName::Shadows:
+        scene = std::make_unique<Scenes::Shadows>(window, *this);
         break;
     default:
         return;
