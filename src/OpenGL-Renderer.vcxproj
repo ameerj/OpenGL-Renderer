@@ -197,6 +197,7 @@
     <ClInclude Include="shaders\phong_shading.h" />
     <ClInclude Include="shaders\shaders.h" />
     <ClInclude Include="shaders\tfb_particles.h" />
+    <ClInclude Include="shaders\two_light_shading.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

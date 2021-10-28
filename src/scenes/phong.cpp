@@ -15,9 +15,7 @@ void Phong::Init() {
 }
 
 void Phong::Configure() {
-    const auto eye = glm::vec3(camera_parameters.radius * std::cos(camera_parameters.theta),
-                               camera_parameters.height,
-                               camera_parameters.radius * std::sin(camera_parameters.theta));
+    const auto eye = OrbitToWorldSpace(camera_parameters);
     const auto at = glm::vec3(0.0, 0.0, 0.0);
     const auto up = glm::vec3(0.0, 1.0, 0.0);
     const auto view_matrix = glm::lookAt(eye, at, up);

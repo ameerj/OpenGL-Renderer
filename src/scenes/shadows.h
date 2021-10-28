@@ -10,7 +10,11 @@ public:
 
     void Init() override;
 
+    void Configure() override;
+
     void Render() override;
+
+    virtual void KeyCallback(int key, int scancode, int action, int mods);
 
     std::string_view Name() override {
         return "Shadows";
@@ -18,5 +22,10 @@ public:
 
 private:
     std::array<Model::Model, 4> walls{};
+
+    OrbitingParameters light_position{
+        .height = 0.0f,
+        .theta = 1.0f,
+    };
 };
 } // namespace Scenes

@@ -58,4 +58,11 @@ void Scene::KeyCallback(int key, int scancode, int action, int mods) {
     }
     camera_parameters.radius = glm::max(camera_parameters.radius, 1.0f);
 }
+
+glm::vec3 Scene::OrbitToWorldSpace(const OrbitingParameters& params) {
+    const auto x = params.radius * std::cos(params.theta);
+    const auto y = params.height;
+    const auto z = params.radius * std::sin(params.theta);
+    return glm::vec3(x, y, z);
+}
 } // namespace Scenes

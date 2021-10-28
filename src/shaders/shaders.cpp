@@ -15,6 +15,7 @@
 #include "phong_shading.h"
 #include "shaders.h"
 #include "tfb_particles.h"
+#include "two_light_shading.h"
 
 namespace Shaders {
 namespace {
@@ -167,6 +168,23 @@ Program GetTfbShader() {
     const GLchar* tfb_attrs[] = {"transformed_coord", "tfb_normal", "tfb_tex_coord"};
     glTransformFeedbackVaryings(program.handle, 3, tfb_attrs, GL_INTERLEAVED_ATTRIBS);
 
+    LinkProgram(program.handle);
+
+    return program;
+}
+
+Program GetMultiLightShader() {
+    const char* vertex_shader_code = two_light_vert.data();
+    const char* fragment_shader_code = two_light_frag.data();
+
+    const Shader vertex = CompileShader(GL_VERTEX_SHADER, vertex_shader_code);
+    const Shader fragment = CompileShader(GL_FRAGMENT_SHADER, fragment_shader_code);
+
+    Program program;
+    program.handle = glCreateProgram();
+
+    glAttachShader(program.handle, vertex.handle);
+    glAttachShader(program.handle, fragment.handle);
     LinkProgram(program.handle);
 
     return program;

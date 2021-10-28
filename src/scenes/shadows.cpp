@@ -7,7 +7,7 @@
 namespace Scenes {
 void Shadows::Init() {
     mesh_model.ParseObjModel("../res/models/sonic.obj");
-    shader_program = Shaders::GetPhongShader();
+    shader_program = Shaders::GetMultiLightShader();
     glUseProgram(shader_program.handle);
 
     UpdateProjMtx();
@@ -36,19 +36,54 @@ void Shadows::Init() {
     walls[3].ParseObjModel("../res/models/plane.obj", scale, translate, rotate);
 }
 
-void Shadows::Render() {
-    mesh_model.Render(GL_TRIANGLES);
+void Shadows::Configure() {
+    glUniform3f(3, 0.0f, 0.0f, 0.0f);
+    glUniform3f(4, 0.25f, 0.25f, 0.25f);
+    glUniform1f(5, light_parameters.shininess);
 
-    const auto eye = glm::vec3(camera_parameters.radius * std::cos(camera_parameters.theta),
-                               camera_parameters.height,
-                               camera_parameters.radius * std::sin(camera_parameters.theta));
+    glUniform3fv(6, 1, &light_parameters.ambient[0]);
+    glUniform3fv(7, 1, &light_parameters.diffuse[0]);
+    glUniform3fv(8, 1, &light_parameters.specular[0]);
+}
+
+void Shadows::Render() {
+    const auto eye = OrbitToWorldSpace(camera_parameters);
     const auto at = glm::vec3(0.0, 0.0, 0.0);
     const auto up = glm::vec3(0.0, 1.0, 0.0);
     const auto view_matrix = glm::lookAt(eye, at, up);
+    const auto model_view_matrix = view_matrix * mesh_model.ModelMatrix();
+
+    glUniformMatrix4fv(0, 1, GL_FALSE, &model_view_matrix[0][0]);
+    glUniformMatrix4fv(1, 1, GL_FALSE, &projection_matrix[0][0]);
+
+    const auto rotating_light_pos =
+        model_view_matrix * glm::vec4(OrbitToWorldSpace(light_position), 1.0f);
+    const std::array<float, 6> light_positions{
+        0.0f, 0.0f, 1.0f, rotating_light_pos[0], rotating_light_pos[1], rotating_light_pos[2]};
+    glUniform3fv(10, 2, light_positions.data());
+
+    mesh_model.Render(GL_TRIANGLES);
+
     for (auto& mesh : walls) {
         const auto model_view_matrix = view_matrix * mesh.ModelMatrix();
         glUniformMatrix4fv(0, 1, GL_FALSE, &model_view_matrix[0][0]);
         mesh.Render(GL_TRIANGLES);
     }
+}
+
+void Shadows::KeyCallback(int key, int scancode, int action, int mods) {
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        light_position.height += 0.1f;
+    }
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        light_position.height -= 0.1f;
+    }
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+        light_position.theta += 0.1f;
+    }
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+        light_position.theta -= 0.1f;
+    }
+    Phong::KeyCallback(key, scancode, action, mods);
 }
 } // namespace Scenes

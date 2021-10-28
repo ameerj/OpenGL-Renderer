@@ -36,11 +36,15 @@ public:
     }
 
 protected:
-    struct CameraParameters {
-        float radius = 5;
+    struct OrbitingParameters {
         float height{};
         float theta{};
-    } camera_parameters{};
+        float radius = 5;
+    };
+
+    glm::vec3 OrbitToWorldSpace(const OrbitingParameters& params);
+
+    OrbitingParameters camera_parameters{};
 
     GLFWwindow* window{};
     Renderer::Renderer& renderer;

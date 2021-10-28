@@ -16,4 +16,6 @@ Program GetGeometryBezierShader();
 
 Program GetTfbShader();
 
+Program GetMultiLightShader();
+
 } // namespace Shaders
