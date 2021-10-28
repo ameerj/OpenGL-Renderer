@@ -1,6 +1,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "../resources/resources.h"
 #include "model.h"
@@ -43,6 +45,13 @@ Mesh::Mesh ProcessMesh(const aiMesh* const mesh, const aiScene* const scene) {
 } // namespace
 
 void Model::ParseObjModel(const std::string& path) {
+    auto default_scale = glm::vec3(0.25f, 0.25f, 0.25f);
+    auto default_translate = glm::vec3(0.0f);
+    ParseObjModel(path, default_scale, default_translate, 180.0f);
+}
+
+void Model::ParseObjModel(const std::string& path, glm::vec3& scale, glm::vec3& translate,
+                          float rotate) {
     Assimp::Importer importer;
     const aiScene* scene =
         importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs |
@@ -59,6 +68,9 @@ void Model::ParseObjModel(const std::string& path) {
     LoadMaterials(scene);
     sampler.Create();
     sampler.DefaultConfiguration();
+
+    model_matrix = glm::scale(glm::mat4(1.0f), scale) *
+                   glm::rotate(glm::mat4(1.0f), glm::radians(rotate), glm::vec3(0, 1, 0));
 }
 
 void Model::CreateBezierBuffers() {
@@ -71,6 +83,10 @@ void Model::CreateBezierBuffers() {
         {{0.0, 6.0, -0.5}}, {{2.0, 6.0, -0.1}}, {{4.0, 6.0, 1.3}}, {{6.0, 6.0, -0.2}},
     };
     AddMesh(control_points);
+
+    model_matrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f)) *
+                   glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0, 1, 0)) *
+                   glm::translate(glm::mat4(1.0f), glm::vec3(-3, -3, 0));
 }
 
 void Model::AddMesh(const std::vector<Vertex>& vertices, const std::vector<u32>& indices,

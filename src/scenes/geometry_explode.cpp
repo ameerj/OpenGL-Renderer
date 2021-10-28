@@ -10,8 +10,6 @@ void GeometryExplode::Init() {
     shader_program = Shaders::GetGeometryShader();
     glUseProgram(shader_program.handle);
 
-    model_matrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.25f, 0.25f, 0.25f)) *
-                   glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0, 1, 0));
     UpdateProjMtx();
     glClearColor(0.25, 0.25, 0.25, 0.0);
 }

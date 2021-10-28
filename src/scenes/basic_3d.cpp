@@ -9,9 +9,6 @@ void Basic3D::Init() {
     mesh_model.ParseObjModel("../res/models/sonic.obj");
     shader_program = Shaders::GetRasterShader();
     glUseProgram(shader_program.handle);
-
-    model_matrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.25f, 0.25f, 0.25f)) *
-                   glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0, 1, 0));
     UpdateProjMtx();
     glClearColor(0.25, 0.25, 0.25, 0.0);
 }
@@ -23,7 +20,8 @@ void Basic3D::Configure() {
     const auto at = glm::vec3(0.0, 0.0, 0.0);
     const auto up = glm::vec3(0.0, 1.0, 0.0);
     const auto view_matrix = glm::lookAt(eye, at, up);
-    const auto model_view_matrix = view_matrix * model_matrix;
+    const auto model_view_matrix = view_matrix * mesh_model.ModelMatrix();
+
     const auto mvp = projection_matrix * model_view_matrix;
     glUniformMatrix4fv(0, 1, GL_FALSE, &mvp[0][0]);
 }

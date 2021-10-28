@@ -150,6 +150,7 @@ Program GetGeometryBezierShader() {
 
     return program;
 }
+
 Program GetTfbShader() {
     const char* vertex_shader_code = tfb_vert.data();
     const char* fragment_shader_code = tfb_frag.data();

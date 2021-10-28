@@ -10,10 +10,6 @@ void Bezier::Init() {
     mesh_model.CreateBezierBuffers();
     glUseProgram(shader_program.handle);
 
-    model_matrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f)) *
-                   glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0, 1, 0)) *
-                   glm::translate(glm::mat4(1.0f), glm::vec3(-3, -3, 0));
-
     UpdateProjMtx();
     glClearColor(0.25, 0.25, 0.25, 0.0);
 }

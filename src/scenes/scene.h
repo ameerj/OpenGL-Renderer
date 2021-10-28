@@ -28,7 +28,7 @@ public:
     virtual void ResetParameters();
 
     virtual void KeyCallback(int key, int scancode, int action, int mods);
-    
+
     virtual void MouseCallback(GLFWwindow* window, int button, int action, int mods) {}
 
     virtual std::string_view Name() {
@@ -49,7 +49,6 @@ protected:
     Program shader_program{};
     Model::Model mesh_model{};
 
-    glm::mat4 model_matrix{};
     glm::mat4 projection_matrix{};
 };
 } // namespace Scenes
