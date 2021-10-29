@@ -131,6 +131,7 @@ void Model::LoadMaterials(const aiScene* scene) {
 }
 
 void Model::Render(GLenum topology) {
+    glActiveTexture(GL_TEXTURE0);
     glBindSampler(0, sampler.handle);
     for (size_t i = 0; i < meshes.size(); ++i) {
         const auto& mesh = meshes[i];

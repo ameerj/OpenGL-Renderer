@@ -21,11 +21,29 @@ public:
     }
 
 private:
+    void CreateWalls();
+
+    void CreateDepthCubemap();
+
+    void ConfigureDepthFramebuffer();
+
+    void RenderShadowMap();
+
+    void RenderMeshes(bool use_view_mtx);
+
     std::array<Model::Model, 4> walls{};
 
     OrbitingParameters light_position{
         .height = 0.0f,
         .theta = 1.0f,
     };
+
+    glm::vec3 light_world_pos{};
+    glm::mat4 view_matrix{};
+
+    Texture depth_cubemap{};
+    Sampler depth_sampler{};
+    Framebuffer depth_fbo{};
+    Program shadow_shader_program{};
 };
 } // namespace Scenes

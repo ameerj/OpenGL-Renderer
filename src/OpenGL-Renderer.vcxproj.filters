@@ -122,5 +122,8 @@
     <ClInclude Include="shaders\two_light_shading.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="shaders\shadow_mapping.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

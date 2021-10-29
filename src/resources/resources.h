@@ -103,3 +103,19 @@ public:
 
     GLuint handle = 0;
 };
+
+class Framebuffer {
+public:
+    Framebuffer() = default;
+    Framebuffer(Framebuffer&& rhs) : handle{std::exchange(rhs.handle, 0)} {}
+
+    ~Framebuffer() {
+        Release();
+    }
+
+    void Create();
+
+    void Release();
+
+    GLuint handle = 0;
+};

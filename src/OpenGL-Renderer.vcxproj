@@ -196,6 +196,7 @@
     <ClInclude Include="shaders\geometry_shader.h" />
     <ClInclude Include="shaders\phong_shading.h" />
     <ClInclude Include="shaders\shaders.h" />
+    <ClInclude Include="shaders\shadow_mapping.h" />
     <ClInclude Include="shaders\tfb_particles.h" />
     <ClInclude Include="shaders\two_light_shading.h" />
   </ItemGroup>

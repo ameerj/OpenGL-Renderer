@@ -14,6 +14,7 @@
 #include "geometry_shader.h"
 #include "phong_shading.h"
 #include "shaders.h"
+#include "shadow_mapping.h"
 #include "tfb_particles.h"
 #include "two_light_shading.h"
 
@@ -184,6 +185,26 @@ Program GetMultiLightShader() {
     program.handle = glCreateProgram();
 
     glAttachShader(program.handle, vertex.handle);
+    glAttachShader(program.handle, fragment.handle);
+    LinkProgram(program.handle);
+
+    return program;
+}
+
+Program GetShadowMappingShader() {
+    const char* vertex_shader_code = shadow_vert.data();
+    const char* geometry_shader_code = shadow_geom.data();
+    const char* fragment_shader_code = shadow_frag.data();
+
+    const Shader vertex = CompileShader(GL_VERTEX_SHADER, vertex_shader_code);
+    const Shader geom = CompileShader(GL_GEOMETRY_SHADER, geometry_shader_code);
+    const Shader fragment = CompileShader(GL_FRAGMENT_SHADER, fragment_shader_code);
+
+    Program program;
+    program.handle = glCreateProgram();
+
+    glAttachShader(program.handle, vertex.handle);
+    glAttachShader(program.handle, geom.handle);
     glAttachShader(program.handle, fragment.handle);
     LinkProgram(program.handle);
 

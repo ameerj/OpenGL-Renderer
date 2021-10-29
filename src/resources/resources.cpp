@@ -99,3 +99,16 @@ void Sampler::DefaultConfiguration() {
     glSamplerParameteri(handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glSamplerParameteri(handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
+
+void Framebuffer::Create() {
+    if (handle != 0)
+        return;
+    glGenFramebuffers(1, &handle);
+}
+
+void Framebuffer::Release() {
+    if (handle == 0)
+        return;
+    glDeleteFramebuffers(1, &handle);
+    handle = 0;
+}

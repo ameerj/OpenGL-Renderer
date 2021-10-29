@@ -18,4 +18,6 @@ Program GetTfbShader();
 
 Program GetMultiLightShader();
 
+Program GetShadowMappingShader();
+
 } // namespace Shaders
