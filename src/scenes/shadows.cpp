@@ -22,6 +22,9 @@ void Shadows::Configure() {}
 
 void Shadows::Render() {
     light_world_pos = OrbitToWorldSpace(light_position);
+    light_world_pos = glm::vec3(0.0f, 0.0f, 0.0f);
+    light_world_pos = OrbitToWorldSpace(camera_parameters);
+    light_world_pos += glm::vec3(-2.0f, 0.0f, 0.0f);
     RenderShadowMap();
 
     glUseProgram(shader_program.handle);
@@ -47,12 +50,7 @@ void Shadows::Render() {
     const auto model_view_matrix = view_matrix * mesh_model.ModelMatrix();
     const auto rotating_light_transform = model_view_matrix * glm::vec4(light_world_pos, 1.0f);
     const std::array<float, 6> light_positions{
-        0.0f,
-        0.0f,
-        1.0f,
-        rotating_light_transform[0],
-        rotating_light_transform[1],
-        rotating_light_transform[2],
+        0.0f, 0.0f, 1.0f, light_world_pos[0], light_world_pos[1], light_world_pos[2],
     };
     glUniform3fv(10, 2, light_positions.data());
 
@@ -149,35 +147,35 @@ void Shadows::RenderShadowMap() {
     glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, depth_fbo.handle);
     glClear(GL_DEPTH_BUFFER_BIT);
-    // ConfigureShaderAndMatrices();
+
     float aspect = (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT;
     float near = 1.0f;
     float far = 25.0f;
-    glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
+    glm::mat4 shadow_proj = glm::perspective(glm::radians(90.0f), aspect, near, far);
 
-    std::vector<glm::mat4> shadowTransforms;
-    shadowTransforms.push_back(shadowProj * glm::lookAt(light_world_pos,
+    std::vector<glm::mat4> shadow_matrices;
+    shadow_matrices.push_back(shadow_proj * glm::lookAt(light_world_pos,
                                                         light_world_pos + glm::vec3(1.0, 0.0, 0.0),
                                                         glm::vec3(0.0, -1.0, 0.0)));
-    shadowTransforms.push_back(shadowProj * glm::lookAt(light_world_pos,
+    shadow_matrices.push_back(shadow_proj * glm::lookAt(light_world_pos,
                                                         light_world_pos + glm::vec3(-1.0, 0.0, 0.0),
                                                         glm::vec3(0.0, -1.0, 0.0)));
-    shadowTransforms.push_back(shadowProj * glm::lookAt(light_world_pos,
+    shadow_matrices.push_back(shadow_proj * glm::lookAt(light_world_pos,
                                                         light_world_pos + glm::vec3(0.0, 1.0, 0.0),
                                                         glm::vec3(0.0, 0.0, 1.0)));
-    shadowTransforms.push_back(shadowProj * glm::lookAt(light_world_pos,
+    shadow_matrices.push_back(shadow_proj * glm::lookAt(light_world_pos,
                                                         light_world_pos + glm::vec3(0.0, -1.0, 0.0),
-                                                        glm::vec3(0.0, 0.0, -1.0)));
-    shadowTransforms.push_back(shadowProj * glm::lookAt(light_world_pos,
+                                                        glm::vec3(0.0, .0, -1.0)));
+    shadow_matrices.push_back(shadow_proj * glm::lookAt(light_world_pos,
                                                         light_world_pos + glm::vec3(0.0, 0.0, 1.0),
                                                         glm::vec3(0.0, -1.0, 0.0)));
-    shadowTransforms.push_back(shadowProj * glm::lookAt(light_world_pos,
+    shadow_matrices.push_back(shadow_proj * glm::lookAt(light_world_pos,
                                                         light_world_pos + glm::vec3(0.0, 0.0, -1.0),
                                                         glm::vec3(0.0, -1.0, 0.0)));
 
     glUniform3fv(1, 1, &light_world_pos[0]);
     glUniform1f(2, far);
-    glUniformMatrix4fv(3, 6, GL_FALSE, &shadowTransforms[0][0][0]);
+    glUniformMatrix4fv(3, 6, GL_FALSE, &shadow_matrices[0][0][0]);
     RenderMeshes(false);
 }
 

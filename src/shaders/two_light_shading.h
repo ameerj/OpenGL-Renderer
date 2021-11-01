@@ -19,7 +19,7 @@ layout (location = 10) uniform vec3 light_position[2];
 void main() {
     vec3 pos = (model_view * vec4(coord, 1.0)).xyz;
     for (int i = 0; i < 2; ++i) {
-        frag_light[i] = normalize(light_position[i] - pos);
+        frag_light[i] = light_position[i] - pos;
     }
     frag_eye = normalize(-pos);
 
@@ -49,15 +49,18 @@ layout (location = 7) uniform vec3 light_diffuse;
 layout (location = 8) uniform vec3 light_specular;
 
 float ShadowCalculation() {
-    vec3 frag_to_light = frag_eye - frag_light[1];
-    float sampled_depth = texture(shadow_texture, frag_to_light).r;
+    vec3 frag_cube_coord = frag_eye - frag_light[1];
+    float sampled_depth = texture(shadow_texture, frag_cube_coord).r;
+
     // it is currently in linear range between [0,1]. Re-transform back to original value
     sampled_depth *= 25.0f;
+
     // now get current linear depth as the length between the fragment and light position
-    float current_depth = length(frag_to_light);
+    float current_depth = length(frag_cube_coord);
+
     // now test for shadows
-    float bias = 0.05; 
-    float shadow = current_depth -  bias > sampled_depth ? 1.0 : 0.0;
+    float bias = 0.05;
+    float shadow = sampled_depth < current_depth ? 1.0 : 0.0;
 
     return shadow;
 }  
@@ -83,6 +86,7 @@ void main() {
             specular = vec3(0.0, 0.0, 0.0);
         }
         float shadow = i > 0 ? ShadowCalculation() : 0.0f;
+        // shadow = 0.0f;
         color += vec4(ambient + (1.0f - shadow) * (diffuse + specular), 1.0f);
     }
 }
