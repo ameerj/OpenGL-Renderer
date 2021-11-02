@@ -35,7 +35,7 @@ private:
 
     OrbitingParameters light_position{
         .height = 0.0f,
-        .theta = 0.0f,
+        .theta = 1.0f,
     };
 
     glm::vec3 light_world_pos{};

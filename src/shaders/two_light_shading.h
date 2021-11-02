@@ -59,7 +59,7 @@ float ShadowCalculation() {
 
     // now test for shadows
     float bias = 0.05;
-    float shadow = current_depth - bias > sampled_depth ? 1.0 : 0.0;
+    float shadow = current_depth - bias > sampled_depth ? 0.0 : 1.0;
 
     return shadow;
 }  
@@ -84,8 +84,9 @@ void main() {
         if (dot(L, N) < 0.0) {
             specular = vec3(0.0, 0.0, 0.0);
         }
-        float shadow = i > 0 ? ShadowCalculation() : 0.0f;
-        color += vec4(ambient + (1.0f - shadow) * (diffuse + specular), 1.0f);
+        float shadow = i == 1 ? ShadowCalculation() : 1.0f;
+        
+        color += vec4((shadow * (diffuse + specular)) + ambient, 1.0f);
     }
 }
 )";

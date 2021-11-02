@@ -22,9 +22,6 @@ void Shadows::Configure() {}
 
 void Shadows::Render() {
     light_world_pos = OrbitToWorldSpace(light_position);
-    light_world_pos = glm::vec3(0.0f, 0.0f, 0.0f);
-    light_world_pos = OrbitToWorldSpace(camera_parameters);
-    light_world_pos += glm::vec3(-2.0f, 0.0f, 0.0f);
     RenderShadowMap();
 
     glUseProgram(shader_program.handle);
@@ -52,7 +49,7 @@ void Shadows::Render() {
     const auto model_view_matrix = view_matrix * mesh_model.ModelMatrix();
     const auto rotating_light_transform = model_view_matrix * glm::vec4(light_world_pos, 1.0f);
     const std::array<float, 6> light_positions{
-        0.0f, 0.0f, 1.0f, light_world_pos[0], light_world_pos[1], light_world_pos[2],
+        eye.x, eye.y, eye.z, light_world_pos.x, light_world_pos.y, light_world_pos.z,
     };
     glUniform3fv(10, 2, light_positions.data());
 
@@ -90,6 +87,13 @@ void Shadows::KeyCallback(int key, int scancode, int action, int mods) {
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
         light_position.theta -= 0.1f;
     }
+    if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS) {
+        light_position.radius += 0.1f;
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS) {
+        light_position.radius -= 0.1f;
+    }
+    light_position.radius = glm::max(0.5f, light_position.radius);
     Phong::KeyCallback(key, scancode, action, mods);
 }
 
