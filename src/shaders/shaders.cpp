@@ -4,6 +4,8 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
+
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
@@ -20,10 +22,35 @@
 
 namespace Shaders {
 namespace {
-Shader CompileShader(GLenum stage, const char* shader_src) {
+enum ShaderStage {
+    VERTEX_STAGE = 0,
+    TESS_CONTROL_STAGE,
+    TESS_EVALUATION_STAGE,
+    GEOMETRY_STAGE,
+    FRAGMENT_STAGE,
+};
+constexpr size_t NUM_STAGES = 5;
+
+GLenum GetGlShaderStage(ShaderStage stage) {
+    switch (stage) {
+    case ShaderStage::VERTEX_STAGE:
+        return GL_VERTEX_SHADER;
+    case ShaderStage::TESS_CONTROL_STAGE:
+        return GL_TESS_CONTROL_SHADER;
+    case ShaderStage::TESS_EVALUATION_STAGE:
+        return GL_TESS_EVALUATION_SHADER;
+    case ShaderStage::GEOMETRY_STAGE:
+        return GL_GEOMETRY_SHADER;
+    case ShaderStage::FRAGMENT_STAGE:
+        return GL_FRAGMENT_SHADER;
+    }
+}
+
+Shader CompileShader(GLenum stage, std::string_view shader_src) {
     Shader shader;
     shader.handle = glCreateShader(stage);
-    glShaderSource(shader.handle, 1, &shader_src, NULL);
+    const GLchar* const code_ptr = shader_src.data();
+    glShaderSource(shader.handle, 1, &code_ptr, NULL);
     glCompileShader(shader.handle);
 
     return shader;
@@ -48,109 +75,71 @@ void LinkProgram(GLuint handle) {
         fprintf(stderr, "LINK LOG: %s\n", log.c_str());
     }
 }
+
+Program CreateShaderProgram(const std::array<std::string_view, NUM_STAGES>& shader_code) {
+    std::vector<Shader> shaders;
+    for (size_t stage = 0; stage < shader_code.size(); ++stage) {
+        auto code = shader_code[stage];
+        if (code.empty()) {
+            continue;
+        }
+        const auto shader_stage = static_cast<ShaderStage>(stage);
+        shaders.push_back(CompileShader(GetGlShaderStage(shader_stage), code));
+    }
+    Program program;
+    program.handle = glCreateProgram();
+    for (const auto& shader : shaders) {
+        glAttachShader(program.handle, shader.handle);
+    }
+    LinkProgram(program.handle);
+    return program;
+}
 } // namespace
 
 Program GetRasterShader() {
-    const char* vertex_shader_code = basic_vert.data();
-    const char* fragment_shader_code = basic_frag.data();
+    std::array<std::string_view, NUM_STAGES> shader_code{};
+    shader_code[ShaderStage::VERTEX_STAGE] = basic_vert;
+    shader_code[ShaderStage::FRAGMENT_STAGE] = basic_frag;
 
-    const Shader vertex = CompileShader(GL_VERTEX_SHADER, vertex_shader_code);
-    const Shader fragment = CompileShader(GL_FRAGMENT_SHADER, fragment_shader_code);
-
-    Program program;
-    program.handle = glCreateProgram();
-
-    glAttachShader(program.handle, vertex.handle);
-    glAttachShader(program.handle, fragment.handle);
-    LinkProgram(program.handle);
-
-    return program;
+    return CreateShaderProgram(shader_code);
 }
 
 Program GetPhongShader() {
-    const char* vertex_shader_code = phong_vert.data();
-    const char* fragment_shader_code = phong_frag.data();
+    std::array<std::string_view, NUM_STAGES> shader_code{};
+    shader_code[ShaderStage::VERTEX_STAGE] = phong_vert;
+    shader_code[ShaderStage::FRAGMENT_STAGE] = phong_frag;
 
-    const Shader vertex = CompileShader(GL_VERTEX_SHADER, vertex_shader_code);
-    const Shader fragment = CompileShader(GL_FRAGMENT_SHADER, fragment_shader_code);
-
-    Program program;
-    program.handle = glCreateProgram();
-
-    glAttachShader(program.handle, vertex.handle);
-    glAttachShader(program.handle, fragment.handle);
-    LinkProgram(program.handle);
-
-    return program;
+    return CreateShaderProgram(shader_code);
 }
 
 Program GetBezierShader() {
-    const char* vertex_shader_code = bezier_vert.data();
-    const char* tess_control_shader_code = bezier_tcs.data();
-    const char* tess_eval_shader_code = bezier_tes.data();
-    const char* fragment_shader_code = bezier_frag.data();
+    std::array<std::string_view, NUM_STAGES> shader_code{};
+    shader_code[ShaderStage::VERTEX_STAGE] = bezier_vert;
+    shader_code[ShaderStage::TESS_CONTROL_STAGE] = bezier_tcs;
+    shader_code[ShaderStage::TESS_EVALUATION_STAGE] = bezier_tes;
+    shader_code[ShaderStage::FRAGMENT_STAGE] = bezier_frag;
 
-    const Shader vertex = CompileShader(GL_VERTEX_SHADER, vertex_shader_code);
-    const Shader tcs = CompileShader(GL_TESS_CONTROL_SHADER, tess_control_shader_code);
-    const Shader tes = CompileShader(GL_TESS_EVALUATION_SHADER, tess_eval_shader_code);
-    const Shader fragment = CompileShader(GL_FRAGMENT_SHADER, fragment_shader_code);
-
-    Program program;
-    program.handle = glCreateProgram();
-
-    glAttachShader(program.handle, vertex.handle);
-    glAttachShader(program.handle, tcs.handle);
-    glAttachShader(program.handle, tes.handle);
-    glAttachShader(program.handle, fragment.handle);
-    LinkProgram(program.handle);
-
-    return program;
+    return CreateShaderProgram(shader_code);
 }
 
 Program GetGeometryShader() {
-    const char* vertex_shader_code = explode_vert.data();
-    const char* geometry_shader_code = explode_geom.data();
-    const char* fragment_shader_code = explode_frag.data();
+    std::array<std::string_view, NUM_STAGES> shader_code{};
+    shader_code[ShaderStage::VERTEX_STAGE] = explode_vert;
+    shader_code[ShaderStage::GEOMETRY_STAGE] = explode_geom;
+    shader_code[ShaderStage::FRAGMENT_STAGE] = explode_frag;
 
-    const Shader vertex = CompileShader(GL_VERTEX_SHADER, vertex_shader_code);
-    const Shader geom = CompileShader(GL_GEOMETRY_SHADER, geometry_shader_code);
-    const Shader fragment = CompileShader(GL_FRAGMENT_SHADER, fragment_shader_code);
-
-    Program program;
-    program.handle = glCreateProgram();
-
-    glAttachShader(program.handle, vertex.handle);
-    glAttachShader(program.handle, geom.handle);
-    glAttachShader(program.handle, fragment.handle);
-    LinkProgram(program.handle);
-
-    return program;
+    return CreateShaderProgram(shader_code);
 }
 
 Program GetGeometryBezierShader() {
-    const char* vertex_shader_code = bezier_vert.data();
-    const char* tess_control_shader_code = bezier_tcs.data();
-    const char* tess_eval_shader_code = bezier_tes.data();
-    const char* geometry_shader_code = bezier_geom.data();
-    const char* fragment_shader_code = bezier_frag.data();
+    std::array<std::string_view, NUM_STAGES> shader_code{};
+    shader_code[ShaderStage::VERTEX_STAGE] = bezier_vert;
+    shader_code[ShaderStage::TESS_CONTROL_STAGE] = bezier_tcs;
+    shader_code[ShaderStage::TESS_EVALUATION_STAGE] = bezier_tes;
+    shader_code[ShaderStage::GEOMETRY_STAGE] = bezier_geom;
+    shader_code[ShaderStage::FRAGMENT_STAGE] = bezier_frag;
 
-    const Shader vertex = CompileShader(GL_VERTEX_SHADER, vertex_shader_code);
-    const Shader tcs = CompileShader(GL_TESS_CONTROL_SHADER, tess_control_shader_code);
-    const Shader tes = CompileShader(GL_TESS_EVALUATION_SHADER, tess_eval_shader_code);
-    const Shader geom = CompileShader(GL_GEOMETRY_SHADER, geometry_shader_code);
-    const Shader fragment = CompileShader(GL_FRAGMENT_SHADER, fragment_shader_code);
-
-    Program program;
-    program.handle = glCreateProgram();
-
-    glAttachShader(program.handle, vertex.handle);
-    glAttachShader(program.handle, tcs.handle);
-    glAttachShader(program.handle, tes.handle);
-    glAttachShader(program.handle, geom.handle);
-    glAttachShader(program.handle, fragment.handle);
-    LinkProgram(program.handle);
-
-    return program;
+    return CreateShaderProgram(shader_code);
 }
 
 Program GetTfbShader() {
@@ -175,39 +164,19 @@ Program GetTfbShader() {
 }
 
 Program GetMultiLightShader() {
-    const char* vertex_shader_code = two_light_vert.data();
-    const char* fragment_shader_code = two_light_frag.data();
+    std::array<std::string_view, NUM_STAGES> shader_code{};
+    shader_code[ShaderStage::VERTEX_STAGE] = two_light_vert;
+    shader_code[ShaderStage::FRAGMENT_STAGE] = two_light_frag;
 
-    const Shader vertex = CompileShader(GL_VERTEX_SHADER, vertex_shader_code);
-    const Shader fragment = CompileShader(GL_FRAGMENT_SHADER, fragment_shader_code);
-
-    Program program;
-    program.handle = glCreateProgram();
-
-    glAttachShader(program.handle, vertex.handle);
-    glAttachShader(program.handle, fragment.handle);
-    LinkProgram(program.handle);
-
-    return program;
+    return CreateShaderProgram(shader_code);
 }
 
 Program GetShadowMappingShader() {
-    const char* vertex_shader_code = shadow_vert.data();
-    const char* geometry_shader_code = shadow_geom.data();
-    const char* fragment_shader_code = shadow_frag.data();
+    std::array<std::string_view, NUM_STAGES> shader_code{};
+    shader_code[ShaderStage::VERTEX_STAGE] = shadow_vert;
+    shader_code[ShaderStage::GEOMETRY_STAGE] = shadow_geom;
+    shader_code[ShaderStage::FRAGMENT_STAGE] = shadow_frag;
 
-    const Shader vertex = CompileShader(GL_VERTEX_SHADER, vertex_shader_code);
-    const Shader geom = CompileShader(GL_GEOMETRY_SHADER, geometry_shader_code);
-    const Shader fragment = CompileShader(GL_FRAGMENT_SHADER, fragment_shader_code);
-
-    Program program;
-    program.handle = glCreateProgram();
-
-    glAttachShader(program.handle, vertex.handle);
-    glAttachShader(program.handle, geom.handle);
-    glAttachShader(program.handle, fragment.handle);
-    LinkProgram(program.handle);
-
-    return program;
+    return CreateShaderProgram(shader_code);
 }
 } // namespace Shaders
