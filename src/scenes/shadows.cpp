@@ -42,11 +42,13 @@ void Shadows::Render() {
     glUniform3fv(7, 1, &light_parameters.diffuse[0]);
     glUniform3fv(8, 1, &light_parameters.specular[0]);
 
+    glUniform3fv(9, 1, &eye[0]);
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, renderer.GetWindowWidth(), renderer.GetWindowHeight());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glUniformMatrix4fv(1, 1, GL_FALSE, &projection_matrix[0][0]);
+    glUniformMatrix4fv(2, 1, GL_FALSE, &projection_matrix[0][0]);
     const auto model_view_matrix = view_matrix * mesh_model.ModelMatrix();
     const auto rotating_light_transform = model_view_matrix * glm::vec4(light_world_pos, 1.0f);
     const std::array<float, 6> light_positions{
@@ -62,14 +64,15 @@ void Shadows::Render() {
 
 void Shadows::RenderMeshes(bool use_view_mtx) {
     const auto view_mtx = use_view_mtx ? view_matrix : glm::mat4(1.0);
-    auto model_view_matrix = view_mtx * mesh_model.ModelMatrix();
+    auto model_matrix = mesh_model.ModelMatrix();
 
-    glUniformMatrix4fv(0, 1, GL_FALSE, &model_view_matrix[0][0]);
+    glUniformMatrix4fv(0, 1, GL_FALSE, &model_matrix[0][0]);
+    glUniformMatrix4fv(1, 1, GL_FALSE, &view_mtx[0][0]);
     mesh_model.Render(GL_TRIANGLES);
 
     for (auto& mesh : walls) {
-        model_view_matrix = view_mtx * mesh.ModelMatrix();
-        glUniformMatrix4fv(0, 1, GL_FALSE, &model_view_matrix[0][0]);
+        model_matrix = mesh.ModelMatrix();
+        glUniformMatrix4fv(0, 1, GL_FALSE, &model_matrix[0][0]);
         mesh.Render(GL_TRIANGLES);
     }
 }
@@ -173,8 +176,7 @@ void Shadows::RenderShadowMap() {
                                                         light_world_pos + glm::vec3(0.0, 0.0, -1.0),
                                                         glm::vec3(0.0, -1.0, 0.0)));
 
-    glUniform3fv(1, 1, &light_world_pos[0]);
-    glUniform1f(2, far);
+    glUniform3fv(2, 1, &light_world_pos[0]);
     glUniformMatrix4fv(3, 6, GL_FALSE, &shadow_matrices[0][0][0]);
     RenderMeshes(false);
 }

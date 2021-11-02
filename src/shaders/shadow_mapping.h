@@ -5,10 +5,11 @@
 constexpr std::string_view shadow_vert = R"(#version 430
 layout (location = 0) in vec3 coord;
 
-layout (location = 0) uniform mat4 model_view;
+layout (location = 0) uniform mat4 model;
+layout (location = 1) uniform mat4 view;
 
 void main() {
-    gl_Position = model_view * vec4(coord, 1.0);
+    gl_Position = view * model * vec4(coord, 1.0);
 }
 )";
 
@@ -39,15 +40,14 @@ void main() {
 constexpr std::string_view shadow_frag = R"(#version 430
 in vec4 frag_pos;
 
-layout (location = 1) uniform vec3 light_pos;
-layout (location = 2) uniform float far_plane;
+layout (location = 2) uniform vec3 light_pos;
 
 void main() {
     // get distance between fragment and light source
     float light_distance = length(frag_pos.xyz - light_pos);
     
     // map to [0:1] range by dividing by far_plane
-    light_distance /= far_plane;
+    light_distance /= 25.0f;
     
     // write this as modified depth
     gl_FragDepth = light_distance;
