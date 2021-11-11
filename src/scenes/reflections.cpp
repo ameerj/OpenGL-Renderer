@@ -16,12 +16,15 @@ void Reflections::Init() {
 
     UpdateProjMtx();
     CreateWalls();
-    CreateDepthCubemap();
+    CreateFrameTexture();
 }
 
 void Reflections::Configure() {}
 
 void Reflections::Render() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+
     const auto eye = OrbitToWorldSpace(camera_parameters);
     const auto at = glm::vec3(0.0, 0.0, 0.0);
     const auto up = glm::vec3(0.0, 1.0, 0.0);
@@ -37,9 +40,8 @@ void Reflections::Render() {
 
     glUniform3fv(9, 1, &eye[0]);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    ConfigureFramebuffer();
     glViewport(0, 0, renderer.GetWindowWidth(), renderer.GetWindowHeight());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUniformMatrix4fv(2, 1, GL_FALSE, &projection_matrix[0][0]);
     const auto model_view_matrix = view_matrix * mesh_model.ModelMatrix();
@@ -54,32 +56,16 @@ void Reflections::Render() {
 
 void Reflections::RenderMeshes() {
     const auto view_mtx = view_matrix;
-    auto model_matrix = mesh_model.ModelMatrix();
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-    glEnable(GL_STENCIL_TEST);
-    glEnable(GL_DEPTH_TEST);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-    glStencilFunc(GL_ALWAYS, 1, 0xFF); // all fragments should pass the stencil test
-    glStencilMask(0xFF);               // enable writing to the stencil buffer
-
-    glUniformMatrix4fv(0, 1, GL_FALSE, &model_matrix[0][0]);
     glUniformMatrix4fv(1, 1, GL_FALSE, &view_mtx[0][0]);
-    mesh_model.Render(GL_TRIANGLES);
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-    glStencilMask(0); // disable writing to the stencil buffer
 
     for (auto& mesh : walls) {
-        model_matrix = mesh.ModelMatrix();
+        auto model_matrix = mesh.ModelMatrix();
         glUniformMatrix4fv(0, 1, GL_FALSE, &model_matrix[0][0]);
         mesh.Render(GL_TRIANGLES);
     }
-    glDisable(GL_STENCIL_TEST);
+    auto model_matrix = mesh_model.ModelMatrix();
+    glUniformMatrix4fv(0, 1, GL_FALSE, &model_matrix[0][0]);
+    mesh_model.Render(GL_TRIANGLES);
 }
 
 void Reflections::KeyCallback(int key, int scancode, int action, int mods) {
@@ -129,34 +115,32 @@ void Reflections::CreateWalls() {
     walls[3].ParseObjModel("../res/models/plane.obj", scale, translate, rotate);
 }
 
-void Reflections::CreateDepthCubemap() {
-    depth_fbo.Create();
-    depth_cubemap.Create();
+void Reflections::CreateFrameTexture() {
+    color_attachment.Create();
+    color_sampler.Create();
+    depth_attachment.Create();
     depth_sampler.Create();
-    glBindSampler(1, depth_sampler.handle);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, depth_cubemap.handle);
-    // Six faces for a cube map.
-    for (u32 i = 0; i < 6; ++i) {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH,
-                     SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-    }
+    frame_fbo.Create();
 
-    glSamplerParameteri(depth_sampler.handle, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glSamplerParameteri(depth_sampler.handle, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glSamplerParameteri(depth_sampler.handle, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glSamplerParameteri(depth_sampler.handle, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    const auto window_width = renderer.GetWindowWidth();
+    const auto window_height = renderer.GetWindowHeight();
+    glBindTexture(GL_TEXTURE_2D, color_attachment.handle);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, window_width, window_height, 0, GL_RGB, GL_UNSIGNED_BYTE,
+                 nullptr);
+    glBindTexture(GL_TEXTURE_2D, depth_attachment.handle);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_STENCIL, window_width, window_height, 0,
+                 GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
+    color_sampler.DefaultConfiguration();
 }
 
-void Reflections::ConfigureDepthFramebuffer() {
-    glBindFramebuffer(GL_FRAMEBUFFER, depth_fbo.handle);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depth_cubemap.handle, 0);
-    glDrawBuffer(GL_NONE);
-    glReadBuffer(GL_NONE);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+void Reflections::ConfigureFramebuffer() {
+    glBindFramebuffer(GL_FRAMEBUFFER, frame_fbo.handle);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, color_attachment.handle, 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, depth_attachment.handle, 0);
 }
 
 void Reflections::RenderShadowMap() {
-    ConfigureDepthFramebuffer();
+    ConfigureFramebuffer();
 }
 
 } // namespace Scenes

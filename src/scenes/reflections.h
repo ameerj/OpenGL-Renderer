@@ -23,9 +23,9 @@ public:
 private:
     void CreateWalls();
 
-    void CreateDepthCubemap();
+    void CreateFrameTexture();
 
-    void ConfigureDepthFramebuffer();
+    void ConfigureFramebuffer();
 
     void RenderShadowMap();
 
@@ -41,9 +41,11 @@ private:
     glm::vec3 light_world_pos{};
     glm::mat4 view_matrix{};
 
-    Texture depth_cubemap{};
+    Texture color_attachment{};
+    Sampler color_sampler{};
+    Texture depth_attachment{};
     Sampler depth_sampler{};
-    Framebuffer depth_fbo{};
+    Framebuffer frame_fbo{};
     Program shadow_shader_program{};
 };
 } // namespace Scenes
