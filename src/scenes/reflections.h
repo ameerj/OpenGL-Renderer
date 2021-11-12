@@ -31,6 +31,8 @@ private:
 
     void RenderMeshes();
 
+    void DrawFullscreenTexture();
+
     std::array<Model::Model, 4> walls{};
 
     OrbitingParameters light_position{
@@ -46,6 +48,6 @@ private:
     Texture depth_attachment{};
     Sampler depth_sampler{};
     Framebuffer frame_fbo{};
-    Program shadow_shader_program{};
+    Program fullscreen_shader_program{};
 };
 } // namespace Scenes

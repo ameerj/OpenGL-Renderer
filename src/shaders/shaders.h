@@ -20,4 +20,6 @@ Program GetMultiLightShader();
 
 Program GetShadowMappingShader();
 
+Program GetFullscreenShader();
+
 } // namespace Shaders

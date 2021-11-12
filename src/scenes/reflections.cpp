@@ -10,7 +10,7 @@ static constexpr u32 SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 void Reflections::Init() {
     mesh_model.ParseObjModel("../res/models/sonic.obj");
     shader_program = Shaders::GetMultiLightShader();
-    shadow_shader_program = Shaders::GetShadowMappingShader();
+    fullscreen_shader_program = Shaders::GetFullscreenShader();
     glUseProgram(shader_program.handle);
     glClearColor(0.25, 0.25, 0.25, 0.0);
 
@@ -22,8 +22,7 @@ void Reflections::Init() {
 void Reflections::Configure() {}
 
 void Reflections::Render() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
+    glUseProgram(shader_program.handle);
 
     const auto eye = OrbitToWorldSpace(camera_parameters);
     const auto at = glm::vec3(0.0, 0.0, 0.0);
@@ -52,6 +51,8 @@ void Reflections::Render() {
     glUniform3fv(10, 2, light_positions.data());
 
     RenderMeshes();
+
+    DrawFullscreenTexture();
 }
 
 void Reflections::RenderMeshes() {
@@ -66,6 +67,17 @@ void Reflections::RenderMeshes() {
     auto model_matrix = mesh_model.ModelMatrix();
     glUniformMatrix4fv(0, 1, GL_FALSE, &model_matrix[0][0]);
     mesh_model.Render(GL_TRIANGLES);
+}
+
+void Reflections::DrawFullscreenTexture() {
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glUseProgram(fullscreen_shader_program.handle);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindSampler(0, color_sampler.handle);
+    glBindTexture(GL_TEXTURE_2D, color_attachment.handle);
+
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
 void Reflections::KeyCallback(int key, int scancode, int action, int mods) {
@@ -137,6 +149,8 @@ void Reflections::ConfigureFramebuffer() {
     glBindFramebuffer(GL_FRAMEBUFFER, frame_fbo.handle);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, color_attachment.handle, 0);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, depth_attachment.handle, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void Reflections::RenderShadowMap() {

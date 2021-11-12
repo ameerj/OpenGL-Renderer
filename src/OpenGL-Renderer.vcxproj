@@ -195,6 +195,7 @@
     <ClInclude Include="shaders\basic_rasterizer.h" />
     <ClInclude Include="shaders\bezier_geom.h" />
     <ClInclude Include="shaders\bezier_tess.h" />
+    <ClInclude Include="shaders\fullscreen_sampling.h" />
     <ClInclude Include="shaders\geometry_shader.h" />
     <ClInclude Include="shaders\phong_shading.h" />
     <ClInclude Include="shaders\shaders.h" />

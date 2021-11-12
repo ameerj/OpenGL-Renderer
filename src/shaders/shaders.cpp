@@ -13,6 +13,7 @@
 #include "basic_rasterizer.h"
 #include "bezier_geom.h"
 #include "bezier_tess.h"
+#include "fullscreen_sampling.h"
 #include "geometry_shader.h"
 #include "phong_shading.h"
 #include "shaders.h"
@@ -176,6 +177,14 @@ Program GetShadowMappingShader() {
     shader_code[ShaderStage::VERTEX_STAGE] = shadow_vert;
     shader_code[ShaderStage::GEOMETRY_STAGE] = shadow_geom;
     shader_code[ShaderStage::FRAGMENT_STAGE] = shadow_frag;
+
+    return CreateShaderProgram(shader_code);
+}
+
+Program GetFullscreenShader() {
+    std::array<std::string_view, NUM_STAGES> shader_code{};
+    shader_code[ShaderStage::VERTEX_STAGE] = fullscreen_vert;
+    shader_code[ShaderStage::FRAGMENT_STAGE] = fullscreen_frag;
 
     return CreateShaderProgram(shader_code);
 }
