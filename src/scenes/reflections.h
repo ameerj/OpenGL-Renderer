@@ -27,13 +27,16 @@ private:
 
     void ConfigureFramebuffer();
 
-    void RenderShadowMap();
+    void RenderSSRTextures();
+
+    void RenderSSRRayMarch();
 
     void RenderMeshes();
 
     void DrawFullscreenTexture();
 
-    std::array<Model::Model, 4> walls{};
+    std::array<Model::Model, 3> walls{};
+    Model::Model floor{};
 
     OrbitingParameters light_position{
         .height = 0.0f,
@@ -50,6 +53,8 @@ private:
     Texture depth_attachment{};
     Sampler depth_sampler{};
     Framebuffer frame_fbo{};
+
+    Program ray_march_shader_program{};
     Program fullscreen_shader_program{};
 };
 } // namespace Scenes

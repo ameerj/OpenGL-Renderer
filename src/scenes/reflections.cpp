@@ -11,6 +11,7 @@ void Reflections::Init() {
     mesh_model.ParseObjModel("../res/models/sonic.obj");
     shader_program = Shaders::GetSSRTexturesShader();
     fullscreen_shader_program = Shaders::GetFullscreenShader();
+    ray_march_shader_program = Shaders::GetSSRRayMarchShader();
     glUseProgram(shader_program.handle);
     glClearColor(0.25, 0.25, 0.25, 0.0);
 
@@ -22,42 +23,14 @@ void Reflections::Init() {
 void Reflections::Configure() {}
 
 void Reflections::Render() {
-    glUseProgram(shader_program.handle);
+    RenderSSRTextures();
+    RenderSSRRayMarch();
 
-    const auto eye = OrbitToWorldSpace(camera_parameters);
-    const auto at = glm::vec3(0.0, 0.0, 0.0);
-    const auto up = glm::vec3(0.0, 1.0, 0.0);
-    view_matrix = glm::lookAt(eye, at, up);
-
-    glUniform3f(3, 0.0f, 0.0f, 0.0f);
-    glUniform3f(4, 0.25f, 0.25f, 0.25f);
-    glUniform1f(5, light_parameters.shininess);
-
-    glUniform3fv(6, 1, &light_parameters.ambient[0]);
-    glUniform3fv(7, 1, &light_parameters.diffuse[0]);
-    glUniform3fv(8, 1, &light_parameters.specular[0]);
-
-    glUniform3fv(9, 1, &eye[0]);
-
-    ConfigureFramebuffer();
-    glViewport(0, 0, renderer.GetWindowWidth(), renderer.GetWindowHeight());
-
-    glUniformMatrix4fv(2, 1, GL_FALSE, &projection_matrix[0][0]);
-    const auto model_view_matrix = view_matrix * mesh_model.ModelMatrix();
-    const auto rotating_light_transform = model_view_matrix * glm::vec4(light_world_pos, 1.0f);
-    const std::array<float, 6> light_positions{
-        eye.x, eye.y, eye.z, light_world_pos.x, light_world_pos.y, light_world_pos.z,
-    };
-    glUniform3fv(10, 2, light_positions.data());
-
-    RenderMeshes();
-
-    DrawFullscreenTexture();
+    // DrawFullscreenTexture();
 }
 
 void Reflections::RenderMeshes() {
-    const auto view_mtx = view_matrix;
-    glUniformMatrix4fv(1, 1, GL_FALSE, &view_mtx[0][0]);
+    glUniformMatrix4fv(1, 1, GL_FALSE, &view_matrix[0][0]);
 
     for (auto& mesh : walls) {
         auto model_matrix = mesh.ModelMatrix();
@@ -108,14 +81,14 @@ void Reflections::KeyCallback(int key, int scancode, int action, int mods) {
 void Reflections::CreateWalls() {
     const auto scale = glm::vec3(5.0f);
 
-    // Back wall
-    auto translate = glm::vec3(0.0f, -1.0f, 0.0f);
-    auto rotate = glm::vec3(0.0f, 180.0f, 90.0f);
+    // Floor
+    auto translate = glm::vec3(0.0f, -0.30, 0.0f);
+    auto rotate = glm::vec3(0.0f, 0.0f, 0.0f);
     walls[0].ParseObjModel("../res/models/plane.obj", scale, translate, rotate);
 
-    // Floor
-    translate = glm::vec3(0.0f, -0.30, 0.0f);
-    rotate = glm::vec3(0.0f, 0.0f, 0.0f);
+    // Back wall
+    translate = glm::vec3(0.0f, -1.0f, 0.0f);
+    rotate = glm::vec3(0.0f, 180.0f, 90.0f);
     walls[1].ParseObjModel("../res/models/plane.obj", scale, translate, rotate);
 
     // Right wall
@@ -171,8 +144,67 @@ void Reflections::ConfigureFramebuffer() {
     glEnable(GL_DEPTH_TEST);
 }
 
-void Reflections::RenderShadowMap() {
+void Reflections::RenderSSRTextures() {
+    glUseProgram(shader_program.handle);
+
+    const auto eye = OrbitToWorldSpace(camera_parameters);
+    const auto at = glm::vec3(0.0, 0.0, 0.0);
+    const auto up = glm::vec3(0.0, 1.0, 0.0);
+    view_matrix = glm::lookAt(eye, at, up);
+
+    glUniform3f(3, 0.0f, 0.0f, 0.0f);
+    glUniform3f(4, 0.25f, 0.25f, 0.25f);
+    glUniform1f(5, light_parameters.shininess);
+
+    glUniform3fv(6, 1, &light_parameters.ambient[0]);
+    glUniform3fv(7, 1, &light_parameters.diffuse[0]);
+    glUniform3fv(8, 1, &light_parameters.specular[0]);
+
+    glUniform3fv(9, 1, &eye[0]);
+
     ConfigureFramebuffer();
+    glViewport(0, 0, renderer.GetWindowWidth(), renderer.GetWindowHeight());
+
+    glUniformMatrix4fv(2, 1, GL_FALSE, &projection_matrix[0][0]);
+    const auto model_view_matrix = view_matrix * mesh_model.ModelMatrix();
+    const auto rotating_light_transform = model_view_matrix * glm::vec4(light_world_pos, 1.0f);
+    const std::array<float, 6> light_positions{
+        eye.x, eye.y, eye.z, light_world_pos.x, light_world_pos.y, light_world_pos.z,
+    };
+    glUniform3fv(10, 2, light_positions.data());
+
+    RenderMeshes();
 }
 
+void Reflections::RenderSSRRayMarch() {
+    glUseProgram(ray_march_shader_program.handle);
+
+    const auto eye = OrbitToWorldSpace(camera_parameters);
+    const auto at = glm::vec3(0.0, 0.0, 0.0);
+    const auto up = glm::vec3(0.0, 1.0, 0.0);
+    view_matrix = glm::lookAt(eye, at, up);
+
+    glUniformMatrix4fv(2, 1, GL_FALSE, &projection_matrix[0][0]);
+    const auto model_view_matrix = view_matrix * mesh_model.ModelMatrix();
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    GLenum draw_buffers[1] = {GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, draw_buffers);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindSampler(0, color_sampler.handle);
+    glBindTexture(GL_TEXTURE_2D, positions_attachment.handle);
+    glActiveTexture(GL_TEXTURE1);
+    glBindSampler(1, color_sampler.handle);
+    glBindTexture(GL_TEXTURE_2D, normals_attachment.handle);
+    glActiveTexture(GL_TEXTURE2);
+    glBindSampler(2, color_sampler.handle);
+    glBindTexture(GL_TEXTURE_2D, color_attachment.handle);
+
+    glUniformMatrix4fv(1, 1, GL_FALSE, &view_matrix[0][0]);
+
+    auto model_matrix = walls[0].ModelMatrix();
+    glUniformMatrix4fv(0, 1, GL_FALSE, &model_matrix[0][0]);
+    walls[0].Render(GL_TRIANGLES, false);
+}
 } // namespace Scenes

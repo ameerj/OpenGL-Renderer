@@ -137,5 +137,8 @@
     <ClInclude Include="shaders\reflections_textures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="shaders\ssr_ray_marching.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

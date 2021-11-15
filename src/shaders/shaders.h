@@ -24,4 +24,6 @@ Program GetFullscreenShader();
 
 Program GetSSRTexturesShader();
 
+Program GetSSRRayMarchShader();
+
 } // namespace Shaders

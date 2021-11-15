@@ -23,7 +23,7 @@ public:
     void AddMesh(const std::vector<Vertex>& vertices, const std::vector<u32>& indices = {},
                  u32 mat_idx = 0);
 
-    void Render(GLenum topology);
+    void Render(GLenum topology, bool with_texture = true);
 
     glm::mat4 ModelMatrix() {
         return model_matrix;
@@ -33,6 +33,9 @@ private:
     void ProcessAINode(aiNode* node, const aiScene* scene);
 
     void LoadMaterials(const aiScene* scene);
+
+    void RenderWithDiffuseTexture(GLenum topology);
+    void RenderWithoutTextures(GLenum topology);
 
     std::vector<Mesh::Mesh> meshes;
     std::vector<Texture> textures;

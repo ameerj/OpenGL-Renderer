@@ -100,6 +100,14 @@ void Model::AddMesh(const std::vector<Vertex>& vertices, const std::vector<u32>&
     meshes.push_back(Mesh::Mesh(vertices, indices, mat_idx));
 }
 
+void Model::Render(GLenum topology, bool with_texture) {
+    if (with_texture) {
+        RenderWithDiffuseTexture(topology);
+    } else {
+        RenderWithoutTextures(topology);
+    }
+}
+
 void Model::ProcessAINode(aiNode* node, const aiScene* scene) {
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
         const aiMesh* const mesh = scene->mMeshes[node->mMeshes[i]];
@@ -130,7 +138,7 @@ void Model::LoadMaterials(const aiScene* scene) {
     }
 }
 
-void Model::Render(GLenum topology) {
+void Model::RenderWithDiffuseTexture(GLenum topology) {
     glActiveTexture(GL_TEXTURE0);
     glBindSampler(0, sampler.handle);
     for (size_t i = 0; i < meshes.size(); ++i) {
@@ -139,6 +147,12 @@ void Model::Render(GLenum topology) {
             const auto texture_idx = mesh.material_index;
             glBindTexture(GL_TEXTURE_2D, textures.at(texture_idx).handle);
         }
+        mesh.Render(topology);
+    }
+}
+
+void Model::RenderWithoutTextures(GLenum topology) {
+    for (const auto& mesh : meshes) {
         mesh.Render(topology);
     }
 }

@@ -19,6 +19,7 @@
 #include "reflections_textures.h"
 #include "shaders.h"
 #include "shadow_mapping.h"
+#include "ssr_ray_marching.h"
 #include "tfb_particles.h"
 #include "two_light_shading.h"
 
@@ -189,10 +190,19 @@ Program GetFullscreenShader() {
 
     return CreateShaderProgram(shader_code);
 }
+
 Program GetSSRTexturesShader() {
     std::array<std::string_view, NUM_STAGES> shader_code{};
     shader_code[ShaderStage::VERTEX_STAGE] = ssr_texture_vert;
     shader_code[ShaderStage::FRAGMENT_STAGE] = ssr_texture_frag;
+
+    return CreateShaderProgram(shader_code);
+}
+
+Program GetSSRRayMarchShader() {
+    std::array<std::string_view, NUM_STAGES> shader_code{};
+    shader_code[ShaderStage::VERTEX_STAGE] = ssr_march_vert;
+    shader_code[ShaderStage::FRAGMENT_STAGE] = ssr_march_frag;
 
     return CreateShaderProgram(shader_code);
 }
