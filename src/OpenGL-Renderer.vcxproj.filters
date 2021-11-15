@@ -134,5 +134,8 @@
     <ClInclude Include="shaders\fullscreen_sampling.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="shaders\reflections_textures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

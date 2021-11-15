@@ -16,6 +16,7 @@
 #include "fullscreen_sampling.h"
 #include "geometry_shader.h"
 #include "phong_shading.h"
+#include "reflections_textures.h"
 #include "shaders.h"
 #include "shadow_mapping.h"
 #include "tfb_particles.h"
@@ -185,6 +186,13 @@ Program GetFullscreenShader() {
     std::array<std::string_view, NUM_STAGES> shader_code{};
     shader_code[ShaderStage::VERTEX_STAGE] = fullscreen_vert;
     shader_code[ShaderStage::FRAGMENT_STAGE] = fullscreen_frag;
+
+    return CreateShaderProgram(shader_code);
+}
+Program GetSSRTexturesShader() {
+    std::array<std::string_view, NUM_STAGES> shader_code{};
+    shader_code[ShaderStage::VERTEX_STAGE] = ssr_texture_vert;
+    shader_code[ShaderStage::FRAGMENT_STAGE] = ssr_texture_frag;
 
     return CreateShaderProgram(shader_code);
 }

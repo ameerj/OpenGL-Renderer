@@ -22,4 +22,6 @@ Program GetShadowMappingShader();
 
 Program GetFullscreenShader();
 
+Program GetSSRTexturesShader();
+
 } // namespace Shaders

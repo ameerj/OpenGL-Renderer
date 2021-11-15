@@ -44,6 +44,8 @@ private:
     glm::mat4 view_matrix{};
 
     Texture color_attachment{};
+    Texture normals_attachment{};
+    Texture positions_attachment{};
     Sampler color_sampler{};
     Texture depth_attachment{};
     Sampler depth_sampler{};

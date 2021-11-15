@@ -9,7 +9,7 @@ static constexpr u32 SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
 void Reflections::Init() {
     mesh_model.ParseObjModel("../res/models/sonic.obj");
-    shader_program = Shaders::GetMultiLightShader();
+    shader_program = Shaders::GetSSRTexturesShader();
     fullscreen_shader_program = Shaders::GetFullscreenShader();
     glUseProgram(shader_program.handle);
     glClearColor(0.25, 0.25, 0.25, 0.0);
@@ -72,6 +72,8 @@ void Reflections::RenderMeshes() {
 void Reflections::DrawFullscreenTexture() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glUseProgram(fullscreen_shader_program.handle);
+    GLenum draw_buffers[1] = {GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, draw_buffers);
 
     glActiveTexture(GL_TEXTURE0);
     glBindSampler(0, color_sampler.handle);
@@ -112,7 +114,7 @@ void Reflections::CreateWalls() {
     walls[0].ParseObjModel("../res/models/plane.obj", scale, translate, rotate);
 
     // Floor
-    translate = glm::vec3(0.0f, -0.5, 0.0f);
+    translate = glm::vec3(0.0f, -0.30, 0.0f);
     rotate = glm::vec3(0.0f, 0.0f, 0.0f);
     walls[1].ParseObjModel("../res/models/plane.obj", scale, translate, rotate);
 
@@ -129,6 +131,8 @@ void Reflections::CreateWalls() {
 
 void Reflections::CreateFrameTexture() {
     color_attachment.Create();
+    normals_attachment.Create();
+    positions_attachment.Create();
     color_sampler.Create();
     depth_attachment.Create();
     depth_sampler.Create();
@@ -136,9 +140,17 @@ void Reflections::CreateFrameTexture() {
 
     const auto window_width = renderer.GetWindowWidth();
     const auto window_height = renderer.GetWindowHeight();
+
     glBindTexture(GL_TEXTURE_2D, color_attachment.handle);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, window_width, window_height, 0, GL_RGB, GL_UNSIGNED_BYTE,
-                 nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, window_width, window_height, 0, GL_RGB,
+                 GL_UNSIGNED_BYTE, nullptr);
+    glBindTexture(GL_TEXTURE_2D, normals_attachment.handle);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, window_width, window_height, 0, GL_RGB,
+                 GL_UNSIGNED_BYTE, nullptr);
+    glBindTexture(GL_TEXTURE_2D, positions_attachment.handle);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, window_width, window_height, 0, GL_RGB,
+                 GL_UNSIGNED_BYTE, nullptr);
+
     glBindTexture(GL_TEXTURE_2D, depth_attachment.handle);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_STENCIL, window_width, window_height, 0,
                  GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
@@ -148,7 +160,13 @@ void Reflections::CreateFrameTexture() {
 void Reflections::ConfigureFramebuffer() {
     glBindFramebuffer(GL_FRAMEBUFFER, frame_fbo.handle);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, color_attachment.handle, 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, normals_attachment.handle, 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, positions_attachment.handle, 0);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, depth_attachment.handle, 0);
+
+    GLenum draw_buffers[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+    glDrawBuffers(3, draw_buffers);
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 }
