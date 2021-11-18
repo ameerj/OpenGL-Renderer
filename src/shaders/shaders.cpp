@@ -16,6 +16,7 @@
 #include "fullscreen_sampling.h"
 #include "geometry_shader.h"
 #include "phong_shading.h"
+#include "reflection_cubemapping.h"
 #include "reflections_textures.h"
 #include "shaders.h"
 #include "shadow_mapping.h"
@@ -203,6 +204,15 @@ Program GetSSRRayMarchShader() {
     std::array<std::string_view, NUM_STAGES> shader_code{};
     shader_code[ShaderStage::VERTEX_STAGE] = ssr_march_vert;
     shader_code[ShaderStage::FRAGMENT_STAGE] = ssr_march_frag;
+
+    return CreateShaderProgram(shader_code);
+}
+
+Program GetCubemapReflectionShader() {
+    std::array<std::string_view, NUM_STAGES> shader_code{};
+    shader_code[ShaderStage::VERTEX_STAGE] = reflect_vert;
+    shader_code[ShaderStage::GEOMETRY_STAGE] = reflect_geom;
+    shader_code[ShaderStage::FRAGMENT_STAGE] = two_light_frag;
 
     return CreateShaderProgram(shader_code);
 }

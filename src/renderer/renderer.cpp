@@ -9,6 +9,7 @@
 
 #include "../scenes/basic_3d.h"
 #include "../scenes/bezier.h"
+#include "../scenes/cubemap_reflections.h"
 #include "../scenes/geometry_explode.h"
 #include "../scenes/phong.h"
 #include "../scenes/reflections.h"
@@ -117,8 +118,11 @@ void Renderer::SetScene(SceneName scene_name) {
     case SceneName::Shadows:
         scene = std::make_unique<Scenes::Shadows>(window, *this);
         break;
-    case SceneName::Reflections:
+    case SceneName::SS_Reflections:
         scene = std::make_unique<Scenes::Reflections>(window, *this);
+        break;
+    case SceneName::CubeMapReflections:
+        scene = std::make_unique<Scenes::CubemapReflections>(window, *this);
         break;
     default:
         return;

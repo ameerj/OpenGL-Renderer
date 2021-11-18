@@ -19,7 +19,7 @@ layout (triangles) in;
 // Max vertices 3 verts per tri, * 6 faces = 18
 layout (triangle_strip, max_vertices = 18) out;
 
-layout (location = 3) uniform mat4 shadow_matrices[6];
+layout (location = 16) uniform mat4 shadow_matrices[6];
 
 out vec4 frag_pos;
 

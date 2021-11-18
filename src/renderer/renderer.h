@@ -21,7 +21,8 @@ enum class SceneName : u8 {
     GeomExplode,
     TFBDemo,
     Shadows,
-    Reflections,
+    SS_Reflections,
+    CubeMapReflections,
 };
 
 class Renderer {

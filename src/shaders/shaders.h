@@ -26,4 +26,6 @@ Program GetSSRTexturesShader();
 
 Program GetSSRRayMarchShader();
 
+Program GetCubemapReflectionShader();
+
 } // namespace Shaders

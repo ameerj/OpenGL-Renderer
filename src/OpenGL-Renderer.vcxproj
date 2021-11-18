@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClCompile Include="..\externals\glad\src\glad.c" />
     <ClCompile Include="scenes\bezier.cpp" />
+    <ClCompile Include="scenes\cubemap_reflections.cpp" />
     <ClCompile Include="scenes\geometry_explode.cpp" />
     <ClCompile Include="scenes\basic_3d.cpp" />
     <ClCompile Include="main.cpp" />
@@ -180,6 +181,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scenes\bezier.h" />
+    <ClInclude Include="scenes\cubemap_reflections.h" />
     <ClInclude Include="scenes\geometry_explode.h" />
     <ClInclude Include="scenes\basic_3d.h" />
     <ClInclude Include="common\common_types.h" />
@@ -199,6 +201,7 @@
     <ClInclude Include="shaders\geometry_shader.h" />
     <ClInclude Include="shaders\phong_shading.h" />
     <ClInclude Include="shaders\reflections_textures.h" />
+    <ClInclude Include="shaders\reflection_cubemapping.h" />
     <ClInclude Include="shaders\shaders.h" />
     <ClInclude Include="shaders\shadow_mapping.h" />
     <ClInclude Include="shaders\ssr_ray_marching.h" />

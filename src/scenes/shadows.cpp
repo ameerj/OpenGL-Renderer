@@ -181,7 +181,7 @@ void Shadows::RenderShadowMap() {
                                                         glm::vec3(0.0, -1.0, 0.0)));
 
     glUniform3fv(2, 1, &light_world_pos[0]);
-    glUniformMatrix4fv(3, 6, GL_FALSE, &shadow_matrices[0][0][0]);
+    glUniformMatrix4fv(16, 6, GL_FALSE, &shadow_matrices[0][0][0]);
     RenderMeshes(false);
 }
 
