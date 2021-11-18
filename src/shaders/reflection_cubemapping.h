@@ -41,6 +41,7 @@ void main() {
         gl_Layer = face; // built-in variable that specifies to which face we render.
         for(int i = 0; i < 3; ++i) {
             vec4 vert_pos = gl_in[i].gl_Position;
+            vert_pos.y = -vert_pos.y;
             gl_Position = projection_matrices[face] * vert_pos;
             frag_coord = vert_coord[i];
             frag_normal = vert_normal[i];

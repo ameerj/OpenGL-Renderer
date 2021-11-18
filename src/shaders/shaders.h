@@ -28,4 +28,6 @@ Program GetSSRRayMarchShader();
 
 Program GetCubemapReflectionShader();
 
+Program GetCubeReflectionSamplingShader();
+
 } // namespace Shaders

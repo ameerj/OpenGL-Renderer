@@ -16,6 +16,7 @@
 #include "fullscreen_sampling.h"
 #include "geometry_shader.h"
 #include "phong_shading.h"
+#include "reflection_cubemap_sampling.h"
 #include "reflection_cubemapping.h"
 #include "reflections_textures.h"
 #include "shaders.h"
@@ -213,6 +214,14 @@ Program GetCubemapReflectionShader() {
     shader_code[ShaderStage::VERTEX_STAGE] = reflect_vert;
     shader_code[ShaderStage::GEOMETRY_STAGE] = reflect_geom;
     shader_code[ShaderStage::FRAGMENT_STAGE] = two_light_frag;
+
+    return CreateShaderProgram(shader_code);
+}
+
+Program GetCubeReflectionSamplingShader() {
+    std::array<std::string_view, NUM_STAGES> shader_code{};
+    shader_code[ShaderStage::VERTEX_STAGE] = two_light_vert;
+    shader_code[ShaderStage::FRAGMENT_STAGE] = reflect_sampling_frag;
 
     return CreateShaderProgram(shader_code);
 }

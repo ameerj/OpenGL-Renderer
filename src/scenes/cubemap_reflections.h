@@ -30,9 +30,14 @@ private:
 
     void RenderCubeMap();
 
+    void RenderColorScene();
+
+    void RenderMirror();
+
     void RenderMeshes(bool use_view_mtx);
 
-    std::array<Model::Model, 4> walls{};
+    std::array<Model::Model, 3> walls{};
+    Model::Model back_wall{};
 
     OrbitingParameters light_position{
         .height = 0.0f,
@@ -46,6 +51,8 @@ private:
     Texture depth_attachment{};
     Sampler reflection_sampler{};
     Framebuffer reflection_fbo{};
+
     Program cubemap_shader_program{};
+    Program cubemap_sampling_program{};
 };
 } // namespace Scenes

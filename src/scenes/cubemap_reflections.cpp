@@ -11,6 +11,7 @@ void CubemapReflections::Init() {
     mesh_model.ParseObjModel("../res/models/sonic.obj");
     shader_program = Shaders::GetMultiLightShader();
     cubemap_shader_program = Shaders::GetCubemapReflectionShader();
+    cubemap_sampling_program = Shaders::GetCubeReflectionSamplingShader();
     glClearColor(0.25, 0.25, 0.25, 0.0);
 
     UpdateProjMtx();
@@ -25,40 +26,8 @@ void CubemapReflections::Configure() {}
 
 void CubemapReflections::Render() {
     RenderCubeMap();
-
-    glUseProgram(shader_program.handle);
-
-    const auto eye = OrbitToWorldSpace(camera_parameters);
-    const auto at = glm::vec3(0.0, 0.0, 0.0);
-    const auto up = glm::vec3(0.0, 1.0, 0.0);
-    view_matrix = glm::lookAt(eye, at, up);
-
-    glUniform3f(3, 0.0f, 0.0f, 0.0f);
-    glUniform3f(4, 0.25f, 0.25f, 0.25f);
-    glUniform1f(5, light_parameters.shininess);
-
-    glUniform3fv(6, 1, &light_parameters.ambient[0]);
-    glUniform3fv(7, 1, &light_parameters.diffuse[0]);
-    glUniform3fv(8, 1, &light_parameters.specular[0]);
-
-    glUniform3fv(9, 1, &eye[0]);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, renderer.GetWindowWidth(), renderer.GetWindowHeight());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glUniformMatrix4fv(2, 1, GL_FALSE, &projection_matrix[0][0]);
-    const auto model_view_matrix = view_matrix * mesh_model.ModelMatrix();
-    const auto rotating_light_transform = model_view_matrix * glm::vec4(mirror_center, 1.0f);
-    const std::array<float, 6> light_positions{
-        eye.x, eye.y, eye.z, mirror_center.x, mirror_center.y, mirror_center.z,
-    };
-    glUniform3fv(10, 2, light_positions.data());
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindSampler(1, reflection_sampler.handle);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, reflection_cubemap.handle);
-    RenderMeshes(true);
+    RenderColorScene();
+    RenderMirror();
 }
 
 void CubemapReflections::RenderMeshes(bool use_view_mtx) {
@@ -105,22 +74,22 @@ void CubemapReflections::CreateWalls() {
     // Back wall
     auto translate = glm::vec3(0.0f, -1.0f, 0.0f);
     auto rotate = glm::vec3(0.0f, 180.0f, 90.0f);
-    walls[0].ParseObjModel("../res/models/plane.obj", scale, translate, rotate);
+    back_wall.ParseObjModel("../res/models/plane.obj", scale, translate, rotate);
 
     // Floor
     translate = glm::vec3(0.0f, -0.5, 0.0f);
     rotate = glm::vec3(0.0f, 0.0f, 0.0f);
-    walls[1].ParseObjModel("../res/models/plane.obj", scale, translate, rotate);
+    walls[0].ParseObjModel("../res/models/plane.obj", scale, translate, rotate);
 
     // Right wall
     translate = glm::vec3(0.0f, -1.0f, 0.0f);
     rotate = glm::vec3(0.0f, 90.0, 90.0f);
-    walls[2].ParseObjModel("../res/models/plane.obj", scale, translate, rotate);
+    walls[1].ParseObjModel("../res/models/plane.obj", scale, translate, rotate);
 
     // Left wall
     translate = glm::vec3(0.0f, -1.0f, 0.0f);
     rotate = glm::vec3(0.0f, 270.0, 90.0f);
-    walls[3].ParseObjModel("../res/models/plane.obj", scale, translate, rotate);
+    walls[2].ParseObjModel("../res/models/plane.obj", scale, translate, rotate);
 }
 
 void CubemapReflections::CreateCubemap() {
@@ -194,6 +163,58 @@ void CubemapReflections::RenderCubeMap() {
     glUniform3fv(8, 1, &light_parameters.specular[0]);
 
     RenderMeshes(false);
+}
+
+void CubemapReflections::RenderColorScene() {
+    glUseProgram(shader_program.handle);
+
+    const auto eye = OrbitToWorldSpace(camera_parameters);
+    const auto at = glm::vec3(0.0, 0.0, 0.0);
+    const auto up = glm::vec3(0.0, 1.0, 0.0);
+    view_matrix = glm::lookAt(eye, at, up);
+
+    glUniform3f(3, 0.0f, 0.0f, 0.0f);
+    glUniform3f(4, 0.25f, 0.25f, 0.25f);
+    glUniform1f(5, light_parameters.shininess);
+
+    glUniform3fv(6, 1, &light_parameters.ambient[0]);
+    glUniform3fv(7, 1, &light_parameters.diffuse[0]);
+    glUniform3fv(8, 1, &light_parameters.specular[0]);
+
+    glUniform3fv(9, 1, &eye[0]);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, renderer.GetWindowWidth(), renderer.GetWindowHeight());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glUniformMatrix4fv(2, 1, GL_FALSE, &projection_matrix[0][0]);
+    const auto model_view_matrix = view_matrix * mesh_model.ModelMatrix();
+    const auto rotating_light_transform = model_view_matrix * glm::vec4(mirror_center, 1.0f);
+    const std::array<float, 6> light_positions{
+        eye.x, eye.y, eye.z, mirror_center.x, mirror_center.y, mirror_center.z,
+    };
+    glUniform3fv(10, 2, light_positions.data());
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindSampler(1, reflection_sampler.handle);
+    RenderMeshes(true);
+}
+
+void CubemapReflections::RenderMirror() {
+    glUseProgram(cubemap_sampling_program.handle);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindSampler(0, reflection_sampler.handle);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, reflection_cubemap.handle);
+
+    glUniformMatrix4fv(1, 1, GL_FALSE, &view_matrix[0][0]);
+
+    auto model_matrix = back_wall.ModelMatrix();
+    glUniformMatrix4fv(0, 1, GL_FALSE, &model_matrix[0][0]);
+    glUniformMatrix4fv(2, 1, GL_FALSE, &projection_matrix[0][0]);
+    const auto eye = OrbitToWorldSpace(camera_parameters);
+    glUniform3fv(9, 1, &eye[0]);
+    back_wall.Render(GL_TRIANGLES, false);
 }
 
 } // namespace Scenes

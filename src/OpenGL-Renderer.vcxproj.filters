@@ -149,5 +149,8 @@
     <ClInclude Include="scenes\cubemap_reflections.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="shaders\reflection_cubemap_sampling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

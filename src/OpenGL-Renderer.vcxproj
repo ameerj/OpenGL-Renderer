@@ -202,6 +202,7 @@
     <ClInclude Include="shaders\phong_shading.h" />
     <ClInclude Include="shaders\reflections_textures.h" />
     <ClInclude Include="shaders\reflection_cubemapping.h" />
+    <ClInclude Include="shaders\reflection_cubemap_sampling.h" />
     <ClInclude Include="shaders\shaders.h" />
     <ClInclude Include="shaders\shadow_mapping.h" />
     <ClInclude Include="shaders\ssr_ray_marching.h" />
